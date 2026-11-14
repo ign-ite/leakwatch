@@ -101,10 +101,21 @@ def prepare_upload(df: pd.DataFrame) -> pd.DataFrame:
     if missing:
         raise ValueError("Missing columns: " + ", ".join(missing))
     out = df[UPLOAD_COLUMNS].copy()
-    out["paid_date"] = pd.to_datetime(out["paid_date"]).dt.strftime("%Y-%m-%d")
-    out["qty"] = out["qty"].astype(int)
-    out["unit_price"] = out["unit_price"].astype(float)
-    out["amount"] = out["amount"].astype(float)
+    blank = [c for c in UPLOAD_COLUMNS if out[c].isna().any()]
+    if blank:
+        raise ValueError("Blank values in: " + ", ".join(blank))
+    out["doc_type"] = out["doc_type"].str.strip().str.upper()
+    if not out["doc_type"].isin(["INV", "CRN"]).all():
+        raise ValueError("doc_type must be INV or CRN")
+    try:
+        out["paid_date"] = pd.to_datetime(out["paid_date"], format="%Y-%m-%d").dt.strftime("%Y-%m-%d")
+    except ValueError:
+        raise ValueError("paid_date must be YYYY-MM-DD") from None
+    try:
+        out["qty"] = out["qty"].astype(int)
+        out[["unit_price", "amount"]] = out[["unit_price", "amount"]].astype(float).round(2)
+    except ValueError:
+        raise ValueError("qty, unit_price and amount must be plain numbers like 1234.50") from None
     out["invoice_no_clean"] = out["invoice_no"].map(clean_invoice_no)
     out["vendor_needs_review"] = 0
     return out

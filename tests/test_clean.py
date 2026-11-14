@@ -107,3 +107,35 @@ def test_clean_erp_rounds_money_to_two_decimals():
                         "UNIT_PRICE": ["0.1001"], "AMOUNT": ["0.3003"], "TYPE": ["INV"]})
     row = clean_erp(raw, "B").iloc[0]
     assert row["unit_price"] == 0.1 and row["amount"] == 0.3
+
+
+def _upload(**overrides):
+    row = {"invoice_id": "X1", "vendor_id": "V9", "invoice_no": "0O12", "paid_date": "2026-02-01",
+           "item": "Widget", "qty": "3", "unit_price": "2.50", "amount": "7.50", "doc_type": "INV"}
+    row.update(overrides)
+    return pd.DataFrame([row])
+
+
+@pytest.mark.parametrize("column", ["invoice_no", "vendor_id", "qty"])
+def test_prepare_upload_rejects_blank_required_values(column):
+    with pytest.raises(ValueError, match=f"Blank values in: {column}"):
+        prepare_upload(_upload(**{column: None}))
+
+
+def test_prepare_upload_accepts_lowercase_doc_type():
+    assert prepare_upload(_upload(doc_type=" inv ")).iloc[0]["doc_type"] == "INV"
+
+
+def test_prepare_upload_rejects_unknown_doc_type():
+    with pytest.raises(ValueError, match="doc_type must be INV or CRN"):
+        prepare_upload(_upload(doc_type="PAYMENT"))
+
+
+def test_prepare_upload_rejects_non_iso_dates():
+    with pytest.raises(ValueError, match="paid_date must be YYYY-MM-DD"):
+        prepare_upload(_upload(paid_date="05/01/2026"))
+
+
+def test_prepare_upload_rejects_formatted_numbers():
+    with pytest.raises(ValueError, match="plain numbers"):
+        prepare_upload(_upload(amount="1,234.50"))
