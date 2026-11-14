@@ -6,7 +6,7 @@ import streamlit as st
 
 from leakage.clean import UPLOAD_COLUMNS, prepare_upload
 from leakage.load import CHECKS, sql_text
-from leakage.memo import build_memo
+from leakage.memo import build_memo, inr
 from leakage.pipeline import detect, run_demo
 from leakage.score import (REVIEW_PENALTY, miss_reasons, scorecard, top_n_share, traps_ignored,
                            value_caught)
@@ -24,10 +24,6 @@ st.set_page_config(page_title="Leakwatch", layout="wide")
 def demo():
     invoices, findings = run_demo(DATA, VENDORS)
     return invoices, findings, pd.read_csv(DATA / "answer_key.csv")
-
-
-def inr(x: float) -> str:
-    return f"₹{x:,.0f}"
 
 
 def findings_table(findings: pd.DataFrame) -> None:
@@ -113,7 +109,9 @@ def leakage_tab() -> None:
             "- Synthetic data is cleaner than real AP data; real exports have more formats and missing fields.\n"
             "- Multi-currency invoices and partial payments are not handled.\n"
             "- Confidence scores are hand-set; next step is learning them from confirmed recoveries.\n"
-            "- Amounts must match exactly; next step is fuzzy amount matching (rounding, tax differences).")
+            "- Amounts must match exactly; next step is fuzzy amount matching (rounding, tax differences).\n"
+            "- Exact matches have no time limit, so a vendor reusing a number a year later is flagged; "
+            "next step is limiting matches to a window or fiscal year.")
 
 
 st.title("Leakwatch")

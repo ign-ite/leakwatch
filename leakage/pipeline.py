@@ -1,4 +1,5 @@
 """End to end: raw ERP files -> ranked findings."""
+from contextlib import closing
 from pathlib import Path
 
 import pandas as pd
@@ -14,7 +15,8 @@ def read_erps(data_dir: Path) -> dict[str, pd.DataFrame]:
 
 
 def detect(invoices: pd.DataFrame, contracts: pd.DataFrame, vendors: pd.DataFrame) -> pd.DataFrame:
-    findings = add_priority(run_all(load_db(invoices, contracts)))
+    with closing(load_db(invoices, contracts)) as conn:
+        findings = add_priority(run_all(conn))
     return findings.merge(vendors, on="vendor_id", how="left")
 
 

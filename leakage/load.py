@@ -9,7 +9,7 @@ CHECKS = ["exact_duplicates", "ocr_duplicates", "price_overcharge"]
 
 
 def load_db(invoices: pd.DataFrame, contracts: pd.DataFrame) -> sqlite3.Connection:
-    conn = sqlite3.connect(":memory:", check_same_thread=False)
+    conn = sqlite3.connect(":memory:")
     invoices.to_sql("invoices", conn, index=False)
     contracts.to_sql("contracts", conn, index=False)
     return conn
