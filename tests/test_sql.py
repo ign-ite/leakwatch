@@ -52,3 +52,16 @@ def test_ocr_duplicates_skips_credit_noted(make_db):
         invoice("C-2", "0045123", "2026-01-25", clean="45123", amount=-100.0, doc_type="CRN"),
     ])
     assert flagged(conn, "ocr_duplicates") == []
+
+
+def test_price_overcharge_flags_and_computes_recoverable(make_db):
+    conn = make_db([
+        invoice("A-1", "1", "2026-01-05", unit_price=10.0, qty=10, amount=100.0),   # at contract
+        invoice("A-2", "2", "2026-01-05", unit_price=12.5, qty=10, amount=125.0),   # overcharged
+        invoice("A-3", "3", "2026-01-05", unit_price=9.0, qty=10, amount=90.0),     # under contract
+        invoice("A-4", "4", "2026-01-05", unit_price=99.0, item="No contract item"),
+        invoice("A-5", "5", "2026-01-05", unit_price=12.5, doc_type="CRN", amount=-125.0),
+    ])
+    result = run_check(conn, "price_overcharge")
+    assert list(result["invoice_id"]) == ["A-2"]
+    assert result.loc[0, "recoverable"] == 25.0
