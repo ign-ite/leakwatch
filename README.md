@@ -23,7 +23,7 @@ with `PVT LTD`, `(India) Private Limited` variants and typos), are:
 The data is synthetic (`leakage/generate.py`, fixed seed) with planted problems recorded in an
 answer key, so every rule has a measured precision and recall. It also plants legitimate payments that
 look like leakage: duplicates already reversed by a credit note, recurring same-amount invoices, a
-vendor reusing an invoice number a year later, and look-alike numbers (`O/0`, `I/1`, `S/5`). The first
+vendor reusing an invoice number a year later, and look-alike numbers (`O/0`, `I/1`, `S/5`, a leading zero). The first
 two are ignored; the last two are flagged, which is why exact and OCR precision are about 0.93–0.94
 rather than 1.0. The app shows why each planted problem was missed.
 

@@ -76,7 +76,7 @@ def leakage_tab() -> None:
     right.caption("decoy: a duplicate already reversed by a credit note. recurring: same amount a "
                   "month later under a new number. reused_number: the vendor reused an invoice "
                   "number a year later. lookalike_number: a separate invoice whose number differs "
-                  "only by O/0, I/1 or S/5. The last two are the false positives: telling them apart "
+                  "only by O/0, I/1, S/5 or a leading zero. The last two are the false positives: telling them apart "
                   "needs a time limit on exact matches, or the document image.")
     unmatched = invoices["vendor_id"].isna()
     review = invoices["vendor_needs_review"] == 1

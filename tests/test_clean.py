@@ -139,3 +139,14 @@ def test_prepare_upload_rejects_non_iso_dates():
 def test_prepare_upload_rejects_formatted_numbers():
     with pytest.raises(ValueError, match="plain numbers"):
         prepare_upload(_upload(amount="1,234.50"))
+
+
+def test_prepare_upload_treats_whitespace_as_blank():
+    with pytest.raises(ValueError, match="Blank values in: invoice_no"):
+        prepare_upload(_upload(invoice_no="   "))
+
+
+def test_prepare_upload_makes_credit_note_amounts_negative():
+    # many ERPs store credit notes as positive amounts; the checks expect negatives
+    out = prepare_upload(_upload(doc_type="CRN", amount="7.50"))
+    assert out.iloc[0]["amount"] == -7.5

@@ -18,7 +18,8 @@ def result(tmp_path_factory):
 def test_only_the_indistinguishable_traps_are_flagged(result):
     _, findings, key = result
     traps = traps_ignored(findings, key).set_index("trap")
-    # credit-noted duplicates and recurring same-amount invoices must be left alone
+    # credit-noted duplicates must be left alone; recurring invoices (new number, same
+    # amount) are a sanity check: neither rule compares different invoice numbers
     for trap in ["decoy", "recurring"]:
         assert traps.loc[trap, "total"] > 0 and traps.loc[trap, "ignored"] == traps.loc[trap, "total"]
     # a reused number a year later and a look-alike number cannot be told apart from

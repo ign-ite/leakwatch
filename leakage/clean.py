@@ -101,6 +101,7 @@ def prepare_upload(df: pd.DataFrame) -> pd.DataFrame:
     if missing:
         raise ValueError("Missing columns: " + ", ".join(missing))
     out = df[UPLOAD_COLUMNS].copy()
+    out = out.apply(lambda col: col.str.strip()).replace("", None)
     blank = [c for c in UPLOAD_COLUMNS if out[c].isna().any()]
     if blank:
         raise ValueError("Blank values in: " + ", ".join(blank))
@@ -116,6 +117,9 @@ def prepare_upload(df: pd.DataFrame) -> pd.DataFrame:
         out[["unit_price", "amount"]] = out[["unit_price", "amount"]].astype(float).round(2)
     except ValueError:
         raise ValueError("qty, unit_price and amount must be plain numbers like 1234.50") from None
+    # Many ERPs store credit notes as positive amounts; the SQL expects them negative.
+    is_credit = out["doc_type"] == "CRN"
+    out.loc[is_credit, "amount"] = -out.loc[is_credit, "amount"].abs()
     out["invoice_no_clean"] = out["invoice_no"].map(clean_invoice_no)
     out["vendor_needs_review"] = 0
     return out
