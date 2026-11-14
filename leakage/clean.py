@@ -74,6 +74,8 @@ def clean_erp(raw: pd.DataFrame, erp: str) -> pd.DataFrame:
         df["amount"] = df["amount"].astype(float)
     df["paid_date"] = df["paid_date"].dt.strftime("%Y-%m-%d")
     df["qty"] = df["qty"].astype(int)
+    # Round money once here so the SQL can compare amounts with plain '='.
+    df[["unit_price", "amount"]] = df[["unit_price", "amount"]].round(2)
     df["erp"] = erp
     return df
 

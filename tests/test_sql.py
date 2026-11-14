@@ -1,5 +1,27 @@
-from leakage.load import run_check
-from tests.conftest import invoice
+import pandas as pd
+import pytest
+
+from leakage.load import load_db, run_all, run_check
+
+COLUMNS = ["invoice_id", "vendor_id", "vendor_needs_review", "invoice_no", "invoice_no_clean",
+           "paid_date", "item", "qty", "unit_price", "amount", "doc_type"]
+
+
+def invoice(invoice_id, invoice_no, paid_date, amount=100.0, vendor_id="V001", doc_type="INV",
+            clean=None, item="Malt (kg)", qty=10, unit_price=10.0, review=0):
+    return [invoice_id, vendor_id, review, invoice_no, clean or invoice_no.lstrip("0"),
+            paid_date, item, qty, unit_price, amount, doc_type]
+
+
+@pytest.fixture
+def make_db():
+    """make_db(rows, contracts=None) -> sqlite connection with invoices + contracts tables."""
+    def _make(rows, contracts=None):
+        invoices = pd.DataFrame(rows, columns=COLUMNS)
+        contracts = contracts if contracts is not None else pd.DataFrame(
+            {"vendor_id": ["V001"], "item": ["Malt (kg)"], "contract_price": [10.0]})
+        return load_db(invoices, contracts)
+    return _make
 
 
 def flagged(conn, check):
@@ -65,3 +87,54 @@ def test_price_overcharge_flags_and_computes_recoverable(make_db):
     result = run_check(conn, "price_overcharge")
     assert list(result["invoice_id"]) == ["A-2"]
     assert result.loc[0, "recoverable"] == 25.0
+
+
+def test_ocr_window_boundary_is_inclusive_at_30_days(make_db):
+    conn = make_db([
+        invoice("A-1", "0045123", "2026-01-01", clean="45123"),
+        invoice("C-1", "OO45123", "2026-01-31", clean="45123"),   # exactly 30 days -> flag
+        invoice("A-2", "0099001", "2026-01-01", clean="99001"),
+        invoice("C-2", "0O99001", "2026-02-01", clean="99001"),   # 31 days -> skip
+    ])
+    assert flagged(conn, "ocr_duplicates") == ["C-1"]
+
+
+def test_unmatched_vendor_rows_are_not_checked(make_db):
+    conn = make_db([
+        invoice("A-1", "0045123", "2026-01-05", vendor_id=None),
+        invoice("B-1", "0045123", "2026-02-01", vendor_id=None),
+    ])
+    assert run_all(conn).empty
+
+
+def test_invoice_paid_three_ways_is_flagged_once_per_extra_payment(make_db):
+    # original, then an OCR misread copy, then an exact copy: 2 overpayments, 2 findings
+    conn = make_db([
+        invoice("A-1", "0045123", "2026-01-01", clean="45123"),
+        invoice("C-1", "OO45123", "2026-01-05", clean="45123"),
+        invoice("B-1", "0045123", "2026-01-10", clean="45123"),
+    ])
+    found = run_all(conn)
+    assert sorted(zip(found["invoice_id"], found["check_type"])) == [
+        ("B-1", "exact_duplicate"), ("C-1", "ocr_duplicate")]
+
+
+def test_one_credit_note_cancels_only_one_repeat_payment(make_db):
+    # paid three times, one credit note: one overpayment is still outstanding
+    conn = make_db([
+        invoice("A-1", "0045123", "2026-01-01"),
+        invoice("B-1", "0045123", "2026-01-10"),
+        invoice("C-1", "0045123", "2026-01-20"),
+        invoice("C-2", "0045123", "2026-01-25", amount=-100.0, doc_type="CRN"),
+    ])
+    assert flagged(conn, "exact_duplicates") == ["C-1"]
+
+
+def test_credit_note_on_mixed_duplicates_leaves_one_flag(make_db):
+    conn = make_db([
+        invoice("A-1", "0045123", "2026-01-01", clean="45123"),
+        invoice("C-1", "OO45123", "2026-01-05", clean="45123"),
+        invoice("B-1", "0045123", "2026-01-10", clean="45123"),
+        invoice("B-2", "0045123", "2026-01-12", clean="45123", amount=-100.0, doc_type="CRN"),
+    ])
+    assert len(run_all(conn)) == 1

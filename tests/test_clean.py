@@ -99,3 +99,11 @@ def test_prepare_upload_adds_derived_columns():
                        "unit_price": ["2.50"], "amount": ["7.50"], "doc_type": ["INV"]})
     row = prepare_upload(df).iloc[0]
     assert row["invoice_no_clean"] == "12" and row["vendor_needs_review"] == 0 and row["amount"] == 7.5
+
+
+def test_clean_erp_rounds_money_to_two_decimals():
+    raw = pd.DataFrame({"ID": ["B-1"], "VENDOR_NAME": ["X"], "INVOICE_NUMBER": ["1"],
+                        "PAYMENT_DATE": ["2026-03-14"], "ITEM": ["Malt (kg)"], "QTY": ["3"],
+                        "UNIT_PRICE": ["0.1001"], "AMOUNT": ["0.3003"], "TYPE": ["INV"]})
+    row = clean_erp(raw, "B").iloc[0]
+    assert row["unit_price"] == 0.1 and row["amount"] == 0.3
