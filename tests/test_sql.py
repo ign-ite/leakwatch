@@ -31,3 +31,24 @@ def test_exact_duplicates_reason_names_first_payment(make_db):
     conn = make_db([invoice("A-1", "0045123", "2026-01-05"), invoice("B-1", "0045123", "2026-02-01")])
     reason = run_check(conn, "exact_duplicates").loc[0, "reason"]
     assert "A-1" in reason and "2026-01-05" in reason
+
+
+def test_ocr_duplicates_flags_misread_within_30_days(make_db):
+    conn = make_db([
+        invoice("A-1", "0045123", "2026-01-05", clean="45123"),
+        invoice("C-1", "OO45123", "2026-01-20", clean="45123"),   # misread, 15 days -> flag
+        invoice("A-2", "0099001", "2026-01-05", clean="99001"),
+        invoice("C-2", "0O99001", "2026-03-01", clean="99001"),   # misread but 55 days -> skip
+        invoice("A-3", "0077001", "2026-01-05", clean="77001"),
+        invoice("B-3", "0077001", "2026-01-10", clean="77001"),   # identical number: exact dup, not OCR
+    ])
+    assert flagged(conn, "ocr_duplicates") == ["C-1"]
+
+
+def test_ocr_duplicates_skips_credit_noted(make_db):
+    conn = make_db([
+        invoice("A-1", "0045123", "2026-01-05", clean="45123"),
+        invoice("C-1", "OO45123", "2026-01-20", clean="45123"),
+        invoice("C-2", "0045123", "2026-01-25", clean="45123", amount=-100.0, doc_type="CRN"),
+    ])
+    assert flagged(conn, "ocr_duplicates") == []
