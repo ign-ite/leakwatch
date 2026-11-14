@@ -8,7 +8,8 @@ from leakage.clean import UPLOAD_COLUMNS, prepare_upload
 from leakage.load import CHECKS, sql_text
 from leakage.memo import build_memo
 from leakage.pipeline import detect, run_demo
-from leakage.score import decoys_ignored, scorecard, top_n_share, value_caught
+from leakage.score import (REVIEW_PENALTY, miss_reasons, scorecard, top_n_share, traps_ignored,
+                           value_caught)
 
 ROOT = Path(__file__).parent
 DATA = ROOT / "data"
@@ -51,11 +52,12 @@ def leakage_tab() -> None:
         "formats are cleaned into one table, loaded into SQLite and checked with three SQL rules. "
         "The data is synthetic with planted problems, so every check can be scored.")
 
-    ignored, total_decoys = decoys_ignored(findings, key)
+    traps = traps_ignored(findings, key)
     c1, c2, c3 = st.columns(3)
     c1.metric("Recoverable value flagged", inr(findings["recoverable"].sum()))
     c2.metric("Planted leakage caught (by value)", f"{value_caught(findings, key):.0%}")
-    c3.metric("Credit-note decoys correctly ignored", f"{ignored} / {total_decoys}")
+    c3.metric("Legitimate look-alikes correctly ignored",
+              f"{traps['ignored'].sum()} / {traps['total'].sum()}")
     n = 20
     st.info(f"The top {n} claims by priority hold **{top_n_share(findings, n):.0%}** of recoverable "
             "value. Priority = recoverable value × confidence.")
@@ -67,12 +69,23 @@ def leakage_tab() -> None:
 
     st.subheader("Scorecard vs answer key")
     st.dataframe(scorecard(findings, key), hide_index=True)
-    st.caption("OCR misses are duplicates paid more than 30 days apart, outside the rule's window. "
-               "Widening the window would catch them, at the cost of more false positives on real data.")
+    left, right = st.columns(2)
+    left.markdown("**Why planted leakage was missed**")
+    left.dataframe(miss_reasons(findings, key, invoices), hide_index=True)
+    left.caption("Duplicates paid more than 30 days after the original fall outside the OCR rule's "
+                 "window; widening it catches them but flags more legitimate repeat invoices. "
+                 "Unmatched vendor names score below 0.75 and are left out of every check.")
+    right.markdown("**Legitimate payments that look like leakage**")
+    right.dataframe(traps, hide_index=True)
+    right.caption("decoy: a duplicate already reversed by a credit note. recurring: same amount a "
+                  "month later under a new number. reused_number: the vendor reused an invoice "
+                  "number a year later. lookalike_number: a separate invoice whose number differs "
+                  "only by O/0, I/1 or S/5. The last two are the false positives: telling them apart "
+                  "needs a time limit on exact matches, or the document image.")
     unmatched = invoices["vendor_id"].isna()
     review = invoices["vendor_needs_review"] == 1
-    st.caption(f"Vendor matching: {review.sum()} invoices matched fuzzily (confidence −0.2), "
-               f"{unmatched.sum()} unmatched and excluded from checks.")
+    st.caption(f"Vendor matching: {review.sum()} invoices matched fuzzily "
+               f"(confidence −{REVIEW_PENALTY}), {unmatched.sum()} unmatched and excluded from checks.")
 
     st.subheader("The SQL")
     for name in CHECKS:

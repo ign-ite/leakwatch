@@ -4,7 +4,7 @@ import pytest
 
 from leakage.generate import generate
 from leakage.pipeline import run_demo
-from leakage.score import decoys_ignored, scorecard
+from leakage.score import miss_reasons, scorecard, traps_ignored
 
 
 @pytest.fixture(scope="module")
@@ -12,31 +12,47 @@ def result(tmp_path_factory):
     root = tmp_path_factory.mktemp("e2e")
     generate(n_invoices=5000, seed=11, data_dir=root, vendors_path=root / "vendors.csv")
     invoices, findings = run_demo(root, root / "vendors.csv")
-    return findings, pd.read_csv(root / "answer_key.csv")
+    return invoices, findings, pd.read_csv(root / "answer_key.csv")
 
 
-def test_no_false_positives(result):
-    findings, key = result
-    assert (scorecard(findings, key)["precision"] == 1.0).all()
+def test_only_the_indistinguishable_traps_are_flagged(result):
+    _, findings, key = result
+    traps = traps_ignored(findings, key).set_index("trap")
+    # credit-noted duplicates and recurring same-amount invoices must be left alone
+    for trap in ["decoy", "recurring"]:
+        assert traps.loc[trap, "total"] > 0 and traps.loc[trap, "ignored"] == traps.loc[trap, "total"]
+    # a reused number a year later and a look-alike number cannot be told apart from
+    # leakage by these rules: they are the known false positives
+    for trap in ["reused_number", "lookalike_number"]:
+        assert traps.loc[trap, "ignored"] == 0
+
+
+def test_precision_is_honest(result):
+    _, findings, key = result
+    card = scorecard(findings, key).set_index("check")
+    assert card.loc["price_overcharge", "precision"] == 1.0
+    assert 0.8 <= card.loc["exact_duplicate", "precision"] < 1.0
+    assert 0.8 <= card.loc["ocr_duplicate", "precision"] < 1.0
 
 
 def test_catches_most_planted_leakage(result):
-    findings, key = result
+    _, findings, key = result
     card = scorecard(findings, key).set_index("check")
     assert card.loc["exact_duplicate", "recall"] >= 0.9
     assert card.loc["price_overcharge", "recall"] >= 0.9
-    # every 10th OCR duplicate is planted >30 days out, beyond the rule's window
     assert 0.7 <= card.loc["ocr_duplicate", "recall"] < 1.0
 
 
-def test_all_decoys_ignored(result):
-    findings, key = result
-    ignored, total = decoys_ignored(findings, key)
-    assert total > 0 and ignored == total
+def test_every_miss_is_explained(result):
+    invoices, findings, key = result
+    reasons = miss_reasons(findings, key, invoices)
+    assert "other" not in set(reasons["reason"])
+    assert reasons["missed"].sum() == (scorecard(findings, key)["planted"]
+                                       - scorecard(findings, key)["caught"]).sum()
 
 
 def test_findings_have_vendor_names(result):
-    findings, _ = result
+    _, findings, _ = result
     assert findings["vendor_name"].notna().all()
 
 

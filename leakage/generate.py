@@ -36,7 +36,10 @@ ERPS = ["A", "B", "C"]
 
 # share of base invoices used for each planted problem
 PLANT_RATES = {"exact_duplicate": 0.008, "ocr_duplicate": 0.007,
-               "price_overcharge": 0.005, "decoy": 0.002}
+               "price_overcharge": 0.005, "decoy": 0.002,
+               "reused_number": 0.0005, "lookalike_number": 0.0005, "recurring": 0.001}
+# Traps: legitimate payments that look like leakage. None of them is money lost.
+TRAPS = ["decoy", "reused_number", "lookalike_number", "recurring"]
 
 
 def make_vendors() -> pd.DataFrame:
@@ -163,26 +166,45 @@ def generate(n_invoices: int = 30_000, seed: int = 42,
             if kind == "exact_duplicate":
                 dup = copy_of(orig, other_erp, rng.randint(1, 60), orig["invoice_no"])
                 extra.append(dup)
-                answer.append((dup["invoice_id"], kind, dup["amount"]))
+                answer.append((dup["invoice_id"], kind, dup["amount"], orig["invoice_id"]))
             elif kind == "ocr_duplicate":
                 # every 10th one is paid >30 days later: the 30-day rule should miss it
                 days = rng.randint(31, 60) if k % 10 == 0 else rng.randint(1, 30)
                 dup = copy_of(orig, rng.choice(ERPS), days, corrupt_invoice_no(orig["invoice_no"], rng))
                 extra.append(dup)
-                answer.append((dup["invoice_id"], kind, dup["amount"]))
+                answer.append((dup["invoice_id"], kind, dup["amount"], orig["invoice_id"]))
             elif kind == "price_overcharge":
                 contract = orig["unit_price"]
                 orig["unit_price"] = round(contract * rng.uniform(1.05, 1.25), 2)
                 orig["amount"] = round(orig["qty"] * orig["unit_price"], 2)
                 answer.append((orig["invoice_id"], kind,
-                               round((orig["unit_price"] - contract) * orig["qty"], 2)))
-            else:  # decoy: a duplicate that was already reversed by a credit note
+                               round((orig["unit_price"] - contract) * orig["qty"], 2), orig["invoice_id"]))
+            elif kind == "decoy":  # a duplicate that was already reversed by a credit note
                 dup = copy_of(orig, other_erp, rng.randint(1, 60), orig["invoice_no"])
                 credit = copy_of(orig, other_erp, 0, orig["invoice_no"])
                 credit.update(doc_type="CRN", amount=-orig["amount"],
                               paid_date=dup["paid_date"] + timedelta(days=rng.randint(1, 15)))
                 extra += [dup, credit]
-                answer.append((dup["invoice_id"], "decoy", 0.0))
+                answer.append((dup["invoice_id"], kind, 0.0, orig["invoice_id"]))
+            elif kind == "reused_number":
+                # the vendor restarts numbering in a new year and bills the same amount again:
+                # a real new invoice that the exact-duplicate rule cannot tell apart
+                dup = copy_of(orig, rng.choice(ERPS), rng.randint(330, 400), orig["invoice_no"])
+                extra.append(dup)
+                answer.append((dup["invoice_id"], kind, 0.0, orig["invoice_id"]))
+            elif kind == "lookalike_number":
+                # a real, separate invoice whose number differs only by a look-alike
+                # character (e.g. an 'S' series): without the document image it is
+                # indistinguishable from a misread, which is why OCR flags carry 0.8 confidence
+                dup = copy_of(orig, rng.choice(ERPS), rng.randint(1, 30),
+                              corrupt_invoice_no(orig["invoice_no"], rng))
+                extra.append(dup)
+                answer.append((dup["invoice_id"], kind, 0.0, orig["invoice_id"]))
+            else:  # recurring: same vendor, item and amount a month later, new invoice number
+                dup = copy_of(orig, rng.choice(ERPS), rng.randint(25, 35),
+                              f"{int(orig['invoice_no']) + 500_000:07d}")
+                extra.append(dup)
+                answer.append((dup["invoice_id"], kind, 0.0, orig["invoice_id"]))
 
     # 3. Write one file per ERP in that ERP's own format.
     data_dir.mkdir(parents=True, exist_ok=True)
@@ -193,7 +215,7 @@ def generate(n_invoices: int = 30_000, seed: int = 42,
         _to_erp_frame(erp_rows, erp).to_csv(data_dir / f"erp_{erp.lower()}.csv", index=False)
     vendors.to_csv(vendors_path, index=False)
     contracts.to_csv(data_dir / "contracts.csv", index=False)
-    pd.DataFrame(answer, columns=["invoice_id", "type", "amount"]).to_csv(
+    pd.DataFrame(answer, columns=["invoice_id", "type", "amount", "original_id"]).to_csv(
         data_dir / "answer_key.csv", index=False)
 
 

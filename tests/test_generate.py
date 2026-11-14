@@ -26,7 +26,9 @@ def test_answer_key_ids_exist_in_erp_files(generated):
         | set(pd.read_csv(d / "erp_c.csv", dtype=str)["record_id"])
     key = pd.read_csv(d / "answer_key.csv")
     assert set(key["invoice_id"]) <= ids
-    assert set(key["type"]) == {"exact_duplicate", "ocr_duplicate", "price_overcharge", "decoy"}
+    assert set(key["original_id"]) <= ids
+    assert set(key["type"]) == {"exact_duplicate", "ocr_duplicate", "price_overcharge",
+                                "decoy", "reused_number", "lookalike_number", "recurring"}
 
 
 def test_same_seed_same_data(tmp_path):
