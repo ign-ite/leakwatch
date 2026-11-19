@@ -1,0 +1,14 @@
+From: Anita Rao <accounts@gokarna.example>
+To: procurement@tidewater.example
+Subject: Revised pricing for printed labels (per 1000)
+
+Hello,
+
+Following our quarterly review, the price for printed labels (per 1000) will be revised to ₹380.95 per unit, effective 1 September 2025. All other terms of our agreement remain unchanged.
+
+Regards,
+Anita Rao
+Gokarna Chemicals Pvt. Ltd.
+
+> On 07/05/2025, procurement@tidewater.example wrote:
+> Could you confirm the current price of INR 431.42 per unit for printed labels (per 1000) still applies?

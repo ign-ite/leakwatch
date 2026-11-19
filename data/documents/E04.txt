@@ -1,0 +1,14 @@
+From: Meera Pai <accounts@kodagu.example>
+To: procurement@tidewater.example
+Subject: Revised pricing for crown caps (per 1000)
+
+Hello,
+
+Following our quarterly review, the price for crown caps (per 1000) will be revised to INR 276.45 per unit, effective 1 August 2025. All other terms of our agreement remain unchanged.
+
+Regards,
+Meera Pai
+Kodagu Spice Traders Pvt. Ltd.
+
+> On 20 May 2025, procurement@tidewater.example wrote:
+> Could you confirm the current price of ₹303.87 per unit for crown caps (per 1000) still applies?

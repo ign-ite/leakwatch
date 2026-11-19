@@ -1,0 +1,1142 @@
+[
+  {
+    "doc_id": "C01",
+    "type": "contract",
+    "terms": [
+      {
+        "vendor_id": "V001",
+        "item": "Crown caps (1000)",
+        "unit_price": 296.05,
+        "rebate_pct": null,
+        "rebate_threshold_qty": null,
+        "effective_from": "2025-04-01",
+        "effective_to": "2026-03-31"
+      },
+      {
+        "vendor_id": "V001",
+        "item": "Corrugated carton",
+        "unit_price": 35.9,
+        "rebate_pct": null,
+        "rebate_threshold_qty": null,
+        "effective_from": "2025-04-01",
+        "effective_to": "2026-03-31"
+      },
+      {
+        "vendor_id": "V001",
+        "item": "Pallet wrap",
+        "unit_price": 932.09,
+        "rebate_pct": null,
+        "rebate_threshold_qty": null,
+        "effective_from": "2025-04-01",
+        "effective_to": "2026-03-31"
+      }
+    ]
+  },
+  {
+    "doc_id": "C02",
+    "type": "contract",
+    "terms": [
+      {
+        "vendor_id": "V002",
+        "item": "Crown caps (1000)",
+        "unit_price": 280.97,
+        "rebate_pct": null,
+        "rebate_threshold_qty": null,
+        "effective_from": "2025-04-01",
+        "effective_to": "2026-03-31"
+      },
+      {
+        "vendor_id": "V002",
+        "item": "PET bottle 500ml",
+        "unit_price": 3.86,
+        "rebate_pct": null,
+        "rebate_threshold_qty": null,
+        "effective_from": "2025-04-01",
+        "effective_to": "2026-03-31"
+      },
+      {
+        "vendor_id": "V002",
+        "item": "Malt (kg)",
+        "unit_price": 49.22,
+        "rebate_pct": null,
+        "rebate_threshold_qty": null,
+        "effective_from": "2025-04-01",
+        "effective_to": "2026-03-31"
+      }
+    ]
+  },
+  {
+    "doc_id": "C03",
+    "type": "contract",
+    "terms": [
+      {
+        "vendor_id": "V003",
+        "item": "Corrugated carton",
+        "unit_price": 39.64,
+        "rebate_pct": null,
+        "rebate_threshold_qty": null,
+        "effective_from": "2025-04-01",
+        "effective_to": "2026-03-31"
+      },
+      {
+        "vendor_id": "V003",
+        "item": "PET bottle 500ml",
+        "unit_price": 4.37,
+        "rebate_pct": null,
+        "rebate_threshold_qty": null,
+        "effective_from": "2025-04-01",
+        "effective_to": "2026-03-31"
+      },
+      {
+        "vendor_id": "V003",
+        "item": "Crown caps (1000)",
+        "unit_price": 305.01,
+        "rebate_pct": null,
+        "rebate_threshold_qty": null,
+        "effective_from": "2025-04-01",
+        "effective_to": "2026-03-31"
+      }
+    ]
+  },
+  {
+    "doc_id": "C04",
+    "type": "contract",
+    "terms": [
+      {
+        "vendor_id": "V004",
+        "item": "Shrink film roll",
+        "unit_price": 1327.36,
+        "rebate_pct": null,
+        "rebate_threshold_qty": null,
+        "effective_from": "2025-04-01",
+        "effective_to": "2026-03-31"
+      },
+      {
+        "vendor_id": "V004",
+        "item": "PET bottle 500ml",
+        "unit_price": 3.79,
+        "rebate_pct": null,
+        "rebate_threshold_qty": null,
+        "effective_from": "2025-04-01",
+        "effective_to": "2026-03-31"
+      },
+      {
+        "vendor_id": "V004",
+        "item": "Glass bottle 650ml",
+        "unit_price": 12.2,
+        "rebate_pct": null,
+        "rebate_threshold_qty": null,
+        "effective_from": "2025-04-01",
+        "effective_to": "2026-03-31"
+      }
+    ]
+  },
+  {
+    "doc_id": "C05",
+    "type": "contract",
+    "terms": [
+      {
+        "vendor_id": "V005",
+        "item": "Printed labels (1000)",
+        "unit_price": 418.99,
+        "rebate_pct": null,
+        "rebate_threshold_qty": null,
+        "effective_from": "2025-04-01",
+        "effective_to": "2026-03-31"
+      },
+      {
+        "vendor_id": "V005",
+        "item": "Glass bottle 650ml",
+        "unit_price": 12.55,
+        "rebate_pct": null,
+        "rebate_threshold_qty": null,
+        "effective_from": "2025-04-01",
+        "effective_to": "2026-03-31"
+      },
+      {
+        "vendor_id": "V005",
+        "item": "Shrink film roll",
+        "unit_price": 1209.15,
+        "rebate_pct": null,
+        "rebate_threshold_qty": null,
+        "effective_from": "2025-04-01",
+        "effective_to": "2026-03-31"
+      }
+    ]
+  },
+  {
+    "doc_id": "C06",
+    "type": "contract",
+    "terms": [
+      {
+        "vendor_id": "V007",
+        "item": "Corrugated carton",
+        "unit_price": 38.28,
+        "rebate_pct": null,
+        "rebate_threshold_qty": null,
+        "effective_from": "2025-04-01",
+        "effective_to": "2026-03-31"
+      },
+      {
+        "vendor_id": "V007",
+        "item": "Pallet wrap",
+        "unit_price": 974.21,
+        "rebate_pct": null,
+        "rebate_threshold_qty": null,
+        "effective_from": "2025-04-01",
+        "effective_to": "2026-03-31"
+      },
+      {
+        "vendor_id": "V007",
+        "item": "Malt (kg)",
+        "unit_price": 50.74,
+        "rebate_pct": null,
+        "rebate_threshold_qty": null,
+        "effective_from": "2025-04-01",
+        "effective_to": "2026-03-31"
+      }
+    ]
+  },
+  {
+    "doc_id": "C07",
+    "type": "contract",
+    "terms": [
+      {
+        "vendor_id": "V008",
+        "item": "PET bottle 500ml",
+        "unit_price": 4.3,
+        "rebate_pct": null,
+        "rebate_threshold_qty": null,
+        "effective_from": "2025-04-01",
+        "effective_to": "2026-03-31"
+      },
+      {
+        "vendor_id": "V008",
+        "item": "Printed labels (1000)",
+        "unit_price": 482.55,
+        "rebate_pct": null,
+        "rebate_threshold_qty": null,
+        "effective_from": "2025-04-01",
+        "effective_to": "2026-03-31"
+      },
+      {
+        "vendor_id": "V008",
+        "item": "Pallet wrap",
+        "unit_price": 903.77,
+        "rebate_pct": null,
+        "rebate_threshold_qty": null,
+        "effective_from": "2025-04-01",
+        "effective_to": "2026-03-31"
+      }
+    ]
+  },
+  {
+    "doc_id": "C08",
+    "type": "contract",
+    "terms": [
+      {
+        "vendor_id": "V010",
+        "item": "Malt (kg)",
+        "unit_price": 50.75,
+        "rebate_pct": null,
+        "rebate_threshold_qty": null,
+        "effective_from": "2025-04-01",
+        "effective_to": "2026-03-31"
+      },
+      {
+        "vendor_id": "V010",
+        "item": "Printed labels (1000)",
+        "unit_price": 445.81,
+        "rebate_pct": null,
+        "rebate_threshold_qty": null,
+        "effective_from": "2025-04-01",
+        "effective_to": "2026-03-31"
+      },
+      {
+        "vendor_id": "V010",
+        "item": "Corrugated carton",
+        "unit_price": 40.54,
+        "rebate_pct": null,
+        "rebate_threshold_qty": null,
+        "effective_from": "2025-04-01",
+        "effective_to": "2026-03-31"
+      }
+    ]
+  },
+  {
+    "doc_id": "C09",
+    "type": "contract",
+    "terms": [
+      {
+        "vendor_id": "V014",
+        "item": "Corrugated carton",
+        "unit_price": 40.32,
+        "rebate_pct": null,
+        "rebate_threshold_qty": null,
+        "effective_from": "2025-04-01",
+        "effective_to": "2026-03-31"
+      },
+      {
+        "vendor_id": "V014",
+        "item": "Crown caps (1000)",
+        "unit_price": 303.87,
+        "rebate_pct": null,
+        "rebate_threshold_qty": null,
+        "effective_from": "2025-04-01",
+        "effective_to": "2026-03-31"
+      },
+      {
+        "vendor_id": "V014",
+        "item": "Shrink film roll",
+        "unit_price": 1141.55,
+        "rebate_pct": null,
+        "rebate_threshold_qty": null,
+        "effective_from": "2025-04-01",
+        "effective_to": "2026-03-31"
+      }
+    ]
+  },
+  {
+    "doc_id": "C10",
+    "type": "contract",
+    "terms": [
+      {
+        "vendor_id": "V015",
+        "item": "Pallet wrap",
+        "unit_price": 889.86,
+        "rebate_pct": null,
+        "rebate_threshold_qty": null,
+        "effective_from": "2025-04-01",
+        "effective_to": "2026-03-31"
+      },
+      {
+        "vendor_id": "V015",
+        "item": "Crown caps (1000)",
+        "unit_price": 333.85,
+        "rebate_pct": null,
+        "rebate_threshold_qty": null,
+        "effective_from": "2025-04-01",
+        "effective_to": "2026-03-31"
+      },
+      {
+        "vendor_id": "V015",
+        "item": "Shrink film roll",
+        "unit_price": 1285.71,
+        "rebate_pct": null,
+        "rebate_threshold_qty": null,
+        "effective_from": "2025-04-01",
+        "effective_to": "2026-03-31"
+      }
+    ]
+  },
+  {
+    "doc_id": "C11",
+    "type": "contract",
+    "terms": [
+      {
+        "vendor_id": "V017",
+        "item": "Printed labels (1000)",
+        "unit_price": 437.58,
+        "rebate_pct": null,
+        "rebate_threshold_qty": null,
+        "effective_from": "2025-04-01",
+        "effective_to": "2026-03-31"
+      },
+      {
+        "vendor_id": "V017",
+        "item": "PET bottle 500ml",
+        "unit_price": 4.62,
+        "rebate_pct": null,
+        "rebate_threshold_qty": null,
+        "effective_from": "2025-04-01",
+        "effective_to": "2026-03-31"
+      },
+      {
+        "vendor_id": "V017",
+        "item": "Malt (kg)",
+        "unit_price": 48.24,
+        "rebate_pct": null,
+        "rebate_threshold_qty": null,
+        "effective_from": "2025-04-01",
+        "effective_to": "2026-03-31"
+      }
+    ]
+  },
+  {
+    "doc_id": "C12",
+    "type": "contract",
+    "terms": [
+      {
+        "vendor_id": "V018",
+        "item": "Shrink film roll",
+        "unit_price": 1340.28,
+        "rebate_pct": null,
+        "rebate_threshold_qty": null,
+        "effective_from": "2025-04-01",
+        "effective_to": "2026-03-31"
+      },
+      {
+        "vendor_id": "V018",
+        "item": "Corrugated carton",
+        "unit_price": 35.36,
+        "rebate_pct": null,
+        "rebate_threshold_qty": null,
+        "effective_from": "2025-04-01",
+        "effective_to": "2026-03-31"
+      },
+      {
+        "vendor_id": "V018",
+        "item": "Printed labels (1000)",
+        "unit_price": 419.4,
+        "rebate_pct": null,
+        "rebate_threshold_qty": null,
+        "effective_from": "2025-04-01",
+        "effective_to": "2026-03-31"
+      }
+    ]
+  },
+  {
+    "doc_id": "C13",
+    "type": "contract",
+    "terms": [
+      {
+        "vendor_id": "V019",
+        "item": "Printed labels (1000)",
+        "unit_price": 439.63,
+        "rebate_pct": null,
+        "rebate_threshold_qty": null,
+        "effective_from": "2025-04-01",
+        "effective_to": "2026-03-31"
+      },
+      {
+        "vendor_id": "V019",
+        "item": "PET bottle 500ml",
+        "unit_price": 4.28,
+        "rebate_pct": null,
+        "rebate_threshold_qty": null,
+        "effective_from": "2025-04-01",
+        "effective_to": "2026-03-31"
+      },
+      {
+        "vendor_id": "V019",
+        "item": "Corrugated carton",
+        "unit_price": 37.76,
+        "rebate_pct": null,
+        "rebate_threshold_qty": null,
+        "effective_from": "2025-04-01",
+        "effective_to": "2026-03-31"
+      }
+    ]
+  },
+  {
+    "doc_id": "C14",
+    "type": "contract",
+    "terms": [
+      {
+        "vendor_id": "V021",
+        "item": "PET bottle 500ml",
+        "unit_price": 4.07,
+        "rebate_pct": null,
+        "rebate_threshold_qty": null,
+        "effective_from": "2025-04-01",
+        "effective_to": "2026-03-31"
+      },
+      {
+        "vendor_id": "V021",
+        "item": "Printed labels (1000)",
+        "unit_price": 431.42,
+        "rebate_pct": null,
+        "rebate_threshold_qty": null,
+        "effective_from": "2025-04-01",
+        "effective_to": "2026-03-31"
+      },
+      {
+        "vendor_id": "V021",
+        "item": "Pallet wrap",
+        "unit_price": 829.15,
+        "rebate_pct": null,
+        "rebate_threshold_qty": null,
+        "effective_from": "2025-04-01",
+        "effective_to": "2026-03-31"
+      }
+    ]
+  },
+  {
+    "doc_id": "C15",
+    "type": "contract",
+    "terms": [
+      {
+        "vendor_id": "V023",
+        "item": "Crown caps (1000)",
+        "unit_price": 297.5,
+        "rebate_pct": null,
+        "rebate_threshold_qty": null,
+        "effective_from": "2025-04-01",
+        "effective_to": "2026-03-31"
+      },
+      {
+        "vendor_id": "V023",
+        "item": "Printed labels (1000)",
+        "unit_price": 462.51,
+        "rebate_pct": null,
+        "rebate_threshold_qty": null,
+        "effective_from": "2025-04-01",
+        "effective_to": "2026-03-31"
+      },
+      {
+        "vendor_id": "V023",
+        "item": "Pallet wrap",
+        "unit_price": 909.4,
+        "rebate_pct": null,
+        "rebate_threshold_qty": null,
+        "effective_from": "2025-04-01",
+        "effective_to": "2026-03-31"
+      }
+    ]
+  },
+  {
+    "doc_id": "C16",
+    "type": "contract",
+    "terms": [
+      {
+        "vendor_id": "V024",
+        "item": "Glass bottle 650ml",
+        "unit_price": 11.59,
+        "rebate_pct": null,
+        "rebate_threshold_qty": null,
+        "effective_from": "2025-04-01",
+        "effective_to": "2026-03-31"
+      },
+      {
+        "vendor_id": "V024",
+        "item": "Shrink film roll",
+        "unit_price": 1319.66,
+        "rebate_pct": null,
+        "rebate_threshold_qty": null,
+        "effective_from": "2025-04-01",
+        "effective_to": "2026-03-31"
+      },
+      {
+        "vendor_id": "V024",
+        "item": "Crown caps (1000)",
+        "unit_price": 311.88,
+        "rebate_pct": null,
+        "rebate_threshold_qty": null,
+        "effective_from": "2025-04-01",
+        "effective_to": "2026-03-31"
+      }
+    ]
+  },
+  {
+    "doc_id": "C17",
+    "type": "contract",
+    "terms": [
+      {
+        "vendor_id": "V025",
+        "item": "Corrugated carton",
+        "unit_price": 37.91,
+        "rebate_pct": null,
+        "rebate_threshold_qty": null,
+        "effective_from": "2025-04-01",
+        "effective_to": "2026-03-31"
+      },
+      {
+        "vendor_id": "V025",
+        "item": "PET bottle 500ml",
+        "unit_price": 3.87,
+        "rebate_pct": null,
+        "rebate_threshold_qty": null,
+        "effective_from": "2025-04-01",
+        "effective_to": "2026-03-31"
+      },
+      {
+        "vendor_id": "V025",
+        "item": "Glass bottle 650ml",
+        "unit_price": 11.18,
+        "rebate_pct": null,
+        "rebate_threshold_qty": null,
+        "effective_from": "2025-04-01",
+        "effective_to": "2026-03-31"
+      }
+    ]
+  },
+  {
+    "doc_id": "C18",
+    "type": "contract",
+    "terms": [
+      {
+        "vendor_id": "V026",
+        "item": "PET bottle 500ml",
+        "unit_price": 3.98,
+        "rebate_pct": null,
+        "rebate_threshold_qty": null,
+        "effective_from": "2025-04-01",
+        "effective_to": "2026-03-31"
+      },
+      {
+        "vendor_id": "V026",
+        "item": "Crown caps (1000)",
+        "unit_price": 314.18,
+        "rebate_pct": null,
+        "rebate_threshold_qty": null,
+        "effective_from": "2025-04-01",
+        "effective_to": "2026-03-31"
+      },
+      {
+        "vendor_id": "V026",
+        "item": "Corrugated carton",
+        "unit_price": 34.8,
+        "rebate_pct": null,
+        "rebate_threshold_qty": null,
+        "effective_from": "2025-04-01",
+        "effective_to": "2026-03-31"
+      }
+    ]
+  },
+  {
+    "doc_id": "C19",
+    "type": "contract",
+    "terms": [
+      {
+        "vendor_id": "V027",
+        "item": "Shrink film roll",
+        "unit_price": 1369.5,
+        "rebate_pct": null,
+        "rebate_threshold_qty": null,
+        "effective_from": "2025-04-01",
+        "effective_to": "2026-03-31"
+      },
+      {
+        "vendor_id": "V027",
+        "item": "Printed labels (1000)",
+        "unit_price": 452.94,
+        "rebate_pct": null,
+        "rebate_threshold_qty": null,
+        "effective_from": "2025-04-01",
+        "effective_to": "2026-03-31"
+      },
+      {
+        "vendor_id": "V027",
+        "item": "Corrugated carton",
+        "unit_price": 35.16,
+        "rebate_pct": null,
+        "rebate_threshold_qty": null,
+        "effective_from": "2025-04-01",
+        "effective_to": "2026-03-31"
+      }
+    ]
+  },
+  {
+    "doc_id": "C20",
+    "type": "contract",
+    "terms": [
+      {
+        "vendor_id": "V028",
+        "item": "Shrink film roll",
+        "unit_price": 1191.26,
+        "rebate_pct": null,
+        "rebate_threshold_qty": null,
+        "effective_from": "2025-04-01",
+        "effective_to": "2026-03-31"
+      },
+      {
+        "vendor_id": "V028",
+        "item": "PET bottle 500ml",
+        "unit_price": 4.51,
+        "rebate_pct": null,
+        "rebate_threshold_qty": null,
+        "effective_from": "2025-04-01",
+        "effective_to": "2026-03-31"
+      },
+      {
+        "vendor_id": "V028",
+        "item": "Crown caps (1000)",
+        "unit_price": 305.23,
+        "rebate_pct": null,
+        "rebate_threshold_qty": null,
+        "effective_from": "2025-04-01",
+        "effective_to": "2026-03-31"
+      }
+    ]
+  },
+  {
+    "doc_id": "C21",
+    "type": "contract",
+    "terms": [
+      {
+        "vendor_id": "V029",
+        "item": "Malt (kg)",
+        "unit_price": 53.97,
+        "rebate_pct": null,
+        "rebate_threshold_qty": null,
+        "effective_from": "2025-04-01",
+        "effective_to": "2026-03-31"
+      },
+      {
+        "vendor_id": "V029",
+        "item": "PET bottle 500ml",
+        "unit_price": 4.38,
+        "rebate_pct": null,
+        "rebate_threshold_qty": null,
+        "effective_from": "2025-04-01",
+        "effective_to": "2026-03-31"
+      },
+      {
+        "vendor_id": "V029",
+        "item": "Pallet wrap",
+        "unit_price": 872.02,
+        "rebate_pct": null,
+        "rebate_threshold_qty": null,
+        "effective_from": "2025-04-01",
+        "effective_to": "2026-03-31"
+      }
+    ]
+  },
+  {
+    "doc_id": "C22",
+    "type": "contract",
+    "terms": [
+      {
+        "vendor_id": "V030",
+        "item": "Pallet wrap",
+        "unit_price": 881.36,
+        "rebate_pct": null,
+        "rebate_threshold_qty": null,
+        "effective_from": "2025-04-01",
+        "effective_to": "2026-03-31"
+      },
+      {
+        "vendor_id": "V030",
+        "item": "Malt (kg)",
+        "unit_price": 49.38,
+        "rebate_pct": null,
+        "rebate_threshold_qty": null,
+        "effective_from": "2025-04-01",
+        "effective_to": "2026-03-31"
+      },
+      {
+        "vendor_id": "V030",
+        "item": "PET bottle 500ml",
+        "unit_price": 3.83,
+        "rebate_pct": null,
+        "rebate_threshold_qty": null,
+        "effective_from": "2025-04-01",
+        "effective_to": "2026-03-31"
+      }
+    ]
+  },
+  {
+    "doc_id": "C23",
+    "type": "contract",
+    "terms": [
+      {
+        "vendor_id": "V032",
+        "item": "Corrugated carton",
+        "unit_price": 41.08,
+        "rebate_pct": null,
+        "rebate_threshold_qty": null,
+        "effective_from": "2025-04-01",
+        "effective_to": "2026-03-31"
+      },
+      {
+        "vendor_id": "V032",
+        "item": "Crown caps (1000)",
+        "unit_price": 332.3,
+        "rebate_pct": null,
+        "rebate_threshold_qty": null,
+        "effective_from": "2025-04-01",
+        "effective_to": "2026-03-31"
+      },
+      {
+        "vendor_id": "V032",
+        "item": "Shrink film roll",
+        "unit_price": 1142.71,
+        "rebate_pct": null,
+        "rebate_threshold_qty": null,
+        "effective_from": "2025-04-01",
+        "effective_to": "2026-03-31"
+      }
+    ]
+  },
+  {
+    "doc_id": "C24",
+    "type": "contract",
+    "terms": [
+      {
+        "vendor_id": "V033",
+        "item": "Malt (kg)",
+        "unit_price": 51.85,
+        "rebate_pct": null,
+        "rebate_threshold_qty": null,
+        "effective_from": "2025-04-01",
+        "effective_to": "2026-03-31"
+      },
+      {
+        "vendor_id": "V033",
+        "item": "Glass bottle 650ml",
+        "unit_price": 11.59,
+        "rebate_pct": null,
+        "rebate_threshold_qty": null,
+        "effective_from": "2025-04-01",
+        "effective_to": "2026-03-31"
+      },
+      {
+        "vendor_id": "V033",
+        "item": "Pallet wrap",
+        "unit_price": 929.76,
+        "rebate_pct": null,
+        "rebate_threshold_qty": null,
+        "effective_from": "2025-04-01",
+        "effective_to": "2026-03-31"
+      }
+    ]
+  },
+  {
+    "doc_id": "C25",
+    "type": "contract",
+    "terms": [
+      {
+        "vendor_id": "V034",
+        "item": "Shrink film roll",
+        "unit_price": 1326.87,
+        "rebate_pct": null,
+        "rebate_threshold_qty": null,
+        "effective_from": "2025-04-01",
+        "effective_to": "2026-03-31"
+      },
+      {
+        "vendor_id": "V034",
+        "item": "Crown caps (1000)",
+        "unit_price": 290.81,
+        "rebate_pct": null,
+        "rebate_threshold_qty": null,
+        "effective_from": "2025-04-01",
+        "effective_to": "2026-03-31"
+      },
+      {
+        "vendor_id": "V034",
+        "item": "Malt (kg)",
+        "unit_price": 47.81,
+        "rebate_pct": null,
+        "rebate_threshold_qty": null,
+        "effective_from": "2025-04-01",
+        "effective_to": "2026-03-31"
+      }
+    ]
+  },
+  {
+    "doc_id": "C26",
+    "type": "contract",
+    "terms": [
+      {
+        "vendor_id": "V035",
+        "item": "Printed labels (1000)",
+        "unit_price": 442.0,
+        "rebate_pct": null,
+        "rebate_threshold_qty": null,
+        "effective_from": "2025-04-01",
+        "effective_to": "2026-03-31"
+      },
+      {
+        "vendor_id": "V035",
+        "item": "Glass bottle 650ml",
+        "unit_price": 12.34,
+        "rebate_pct": null,
+        "rebate_threshold_qty": null,
+        "effective_from": "2025-04-01",
+        "effective_to": "2026-03-31"
+      },
+      {
+        "vendor_id": "V035",
+        "item": "Malt (kg)",
+        "unit_price": 47.36,
+        "rebate_pct": null,
+        "rebate_threshold_qty": null,
+        "effective_from": "2025-04-01",
+        "effective_to": "2026-03-31"
+      }
+    ]
+  },
+  {
+    "doc_id": "C27",
+    "type": "contract",
+    "terms": [
+      {
+        "vendor_id": "V037",
+        "item": "Malt (kg)",
+        "unit_price": 51.47,
+        "rebate_pct": null,
+        "rebate_threshold_qty": null,
+        "effective_from": "2025-04-01",
+        "effective_to": "2026-03-31"
+      },
+      {
+        "vendor_id": "V037",
+        "item": "Crown caps (1000)",
+        "unit_price": 305.16,
+        "rebate_pct": null,
+        "rebate_threshold_qty": null,
+        "effective_from": "2025-04-01",
+        "effective_to": "2026-03-31"
+      },
+      {
+        "vendor_id": "V037",
+        "item": "PET bottle 500ml",
+        "unit_price": 4.01,
+        "rebate_pct": null,
+        "rebate_threshold_qty": null,
+        "effective_from": "2025-04-01",
+        "effective_to": "2026-03-31"
+      }
+    ]
+  },
+  {
+    "doc_id": "C28",
+    "type": "contract",
+    "terms": [
+      {
+        "vendor_id": "V038",
+        "item": "Malt (kg)",
+        "unit_price": 51.41,
+        "rebate_pct": null,
+        "rebate_threshold_qty": null,
+        "effective_from": "2025-04-01",
+        "effective_to": "2026-03-31"
+      },
+      {
+        "vendor_id": "V038",
+        "item": "Printed labels (1000)",
+        "unit_price": 482.52,
+        "rebate_pct": null,
+        "rebate_threshold_qty": null,
+        "effective_from": "2025-04-01",
+        "effective_to": "2026-03-31"
+      },
+      {
+        "vendor_id": "V038",
+        "item": "Corrugated carton",
+        "unit_price": 38.38,
+        "rebate_pct": null,
+        "rebate_threshold_qty": null,
+        "effective_from": "2025-04-01",
+        "effective_to": "2026-03-31"
+      }
+    ]
+  },
+  {
+    "doc_id": "C29",
+    "type": "contract",
+    "terms": [
+      {
+        "vendor_id": "V039",
+        "item": "Corrugated carton",
+        "unit_price": 40.55,
+        "rebate_pct": null,
+        "rebate_threshold_qty": null,
+        "effective_from": "2025-04-01",
+        "effective_to": "2026-03-31"
+      },
+      {
+        "vendor_id": "V039",
+        "item": "Pallet wrap",
+        "unit_price": 973.48,
+        "rebate_pct": null,
+        "rebate_threshold_qty": null,
+        "effective_from": "2025-04-01",
+        "effective_to": "2026-03-31"
+      },
+      {
+        "vendor_id": "V039",
+        "item": "PET bottle 500ml",
+        "unit_price": 4.56,
+        "rebate_pct": null,
+        "rebate_threshold_qty": null,
+        "effective_from": "2025-04-01",
+        "effective_to": "2026-03-31"
+      }
+    ]
+  },
+  {
+    "doc_id": "C30",
+    "type": "contract",
+    "terms": [
+      {
+        "vendor_id": "V040",
+        "item": "Malt (kg)",
+        "unit_price": 51.85,
+        "rebate_pct": null,
+        "rebate_threshold_qty": null,
+        "effective_from": "2025-04-01",
+        "effective_to": "2026-03-31"
+      },
+      {
+        "vendor_id": "V040",
+        "item": "Crown caps (1000)",
+        "unit_price": 292.25,
+        "rebate_pct": null,
+        "rebate_threshold_qty": null,
+        "effective_from": "2025-04-01",
+        "effective_to": "2026-03-31"
+      },
+      {
+        "vendor_id": "V040",
+        "item": "Shrink film roll",
+        "unit_price": 1225.26,
+        "rebate_pct": null,
+        "rebate_threshold_qty": null,
+        "effective_from": "2025-04-01",
+        "effective_to": "2026-03-31"
+      }
+    ]
+  },
+  {
+    "doc_id": "E01",
+    "type": "email",
+    "terms": [
+      {
+        "vendor_id": "V026",
+        "item": "PET bottle 500ml",
+        "unit_price": 3.63,
+        "rebate_pct": null,
+        "rebate_threshold_qty": null,
+        "effective_from": "2025-08-01",
+        "effective_to": null
+      }
+    ]
+  },
+  {
+    "doc_id": "E02",
+    "type": "email",
+    "terms": [
+      {
+        "vendor_id": "V023",
+        "item": "Printed labels (1000)",
+        "unit_price": 409.73,
+        "rebate_pct": null,
+        "rebate_threshold_qty": null,
+        "effective_from": "2025-10-01",
+        "effective_to": null
+      }
+    ]
+  },
+  {
+    "doc_id": "E03",
+    "type": "email",
+    "terms": [
+      {
+        "vendor_id": "V026",
+        "item": "Corrugated carton",
+        "unit_price": 31.61,
+        "rebate_pct": null,
+        "rebate_threshold_qty": null,
+        "effective_from": "2025-12-01",
+        "effective_to": null
+      }
+    ]
+  },
+  {
+    "doc_id": "E04",
+    "type": "email",
+    "terms": [
+      {
+        "vendor_id": "V014",
+        "item": "Crown caps (1000)",
+        "unit_price": 276.45,
+        "rebate_pct": null,
+        "rebate_threshold_qty": null,
+        "effective_from": "2025-08-01",
+        "effective_to": null
+      }
+    ]
+  },
+  {
+    "doc_id": "E05",
+    "type": "email",
+    "terms": [
+      {
+        "vendor_id": "V024",
+        "item": "Glass bottle 650ml",
+        "unit_price": 10.41,
+        "rebate_pct": null,
+        "rebate_threshold_qty": null,
+        "effective_from": "2025-08-01",
+        "effective_to": null
+      }
+    ]
+  },
+  {
+    "doc_id": "E06",
+    "type": "email",
+    "terms": [
+      {
+        "vendor_id": "V021",
+        "item": "Printed labels (1000)",
+        "unit_price": 380.95,
+        "rebate_pct": null,
+        "rebate_threshold_qty": null,
+        "effective_from": "2025-09-01",
+        "effective_to": null
+      }
+    ]
+  },
+  {
+    "doc_id": "E07",
+    "type": "email",
+    "terms": [
+      {
+        "vendor_id": "V004",
+        "item": "Glass bottle 650ml",
+        "unit_price": null,
+        "rebate_pct": 3.0,
+        "rebate_threshold_qty": 107000,
+        "effective_from": "2025-10-01",
+        "effective_to": "2026-03-31"
+      }
+    ]
+  },
+  {
+    "doc_id": "E08",
+    "type": "email",
+    "terms": [
+      {
+        "vendor_id": "V024",
+        "item": "Shrink film roll",
+        "unit_price": null,
+        "rebate_pct": 2.0,
+        "rebate_threshold_qty": 108000,
+        "effective_from": "2025-10-01",
+        "effective_to": "2026-03-31"
+      }
+    ]
+  },
+  {
+    "doc_id": "E09",
+    "type": "email",
+    "terms": [
+      {
+        "vendor_id": "V001",
+        "item": "Pallet wrap",
+        "unit_price": null,
+        "rebate_pct": 5.0,
+        "rebate_threshold_qty": 189000,
+        "effective_from": "2025-10-01",
+        "effective_to": "2026-03-31"
+      }
+    ]
+  },
+  {
+    "doc_id": "E10",
+    "type": "email",
+    "terms": [
+      {
+        "vendor_id": "V033",
+        "item": "Glass bottle 650ml",
+        "unit_price": null,
+        "rebate_pct": 3.0,
+        "rebate_threshold_qty": 154000,
+        "effective_from": "2025-10-01",
+        "effective_to": "2026-03-31"
+      }
+    ]
+  }
+]

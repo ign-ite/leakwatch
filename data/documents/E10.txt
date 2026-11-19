@@ -1,0 +1,14 @@
+From: Anita Rao <accounts@hosur.example>
+To: procurement@tidewater.example
+Subject: Volume rebate on 650 ml glass bottles
+
+Hello,
+
+We are pleased to offer a volume rebate of 3% on 650 ml glass bottles once your purchases cross 154k units between 01/10/2025 and 31 March 2026. The rebate applies to all purchases of 650 ml glass bottles in that period.
+
+Regards,
+Anita Rao
+Hosur Auto Parts Pvt. Ltd.
+
+> On May 21st, 2025, procurement@tidewater.example wrote:
+> Is there any volume discount on 650 ml glass bottles? We currently pay Rs. 11.59 per unit.

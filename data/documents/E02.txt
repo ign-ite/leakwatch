@@ -1,0 +1,14 @@
+From: Suresh Shetty <accounts@panambur.example>
+To: procurement@tidewater.example
+Subject: Revised pricing for printed labels (per 1000)
+
+Hello,
+
+Following our quarterly review, the price for printed labels (per 1000) will be revised to ₹409.73 per unit, effective 1 October 2025. All other terms of our agreement remain unchanged.
+
+Regards,
+Suresh Shetty
+Panambur Port Services Pvt. Ltd.
+
+> On June 28th, 2025, procurement@tidewater.example wrote:
+> Could you confirm the current price of INR 462.51 per unit for printed labels (per 1000) still applies?

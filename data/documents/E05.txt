@@ -1,0 +1,14 @@
+From: Divya Hegde <accounts@chikmagalur.example>
+To: procurement@tidewater.example
+Subject: Revised pricing for 650 ml glass bottles
+
+Hello,
+
+Following our quarterly review, the price for 650 ml glass bottles will be revised to 10.41 rupees per unit, effective 1 August 2025. All other terms of our agreement remain unchanged.
+
+Regards,
+Divya Hegde
+Chikmagalur Estates Pvt. Ltd.
+
+> On June 9th, 2025, procurement@tidewater.example wrote:
+> Could you confirm the current price of INR 11.59 per unit for 650 ml glass bottles still applies?

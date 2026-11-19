@@ -1,0 +1,14 @@
+From: Anita Rao <accounts@kollur.example>
+To: procurement@tidewater.example
+Subject: Revised pricing for corrugated shipping cartons
+
+Hello,
+
+Following our quarterly review, the price for corrugated shipping cartons will be revised to 31.61 rupees per unit, effective December 1st, 2025. All other terms of our agreement remain unchanged.
+
+Regards,
+Anita Rao
+Kollur Industrial Gases Pvt. Ltd.
+
+> On June 2nd, 2025, procurement@tidewater.example wrote:
+> Could you confirm the current price of INR 34.80 per unit for corrugated shipping cartons still applies?

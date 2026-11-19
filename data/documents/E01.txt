@@ -1,0 +1,14 @@
+From: Divya Hegde <accounts@kollur.example>
+To: procurement@tidewater.example
+Subject: Revised pricing for PET bottles, 500ml
+
+Hello,
+
+Following our quarterly review, the price for PET bottles, 500ml will be revised to 3.63 rupees per unit, effective 01/08/2025. All other terms of our agreement remain unchanged.
+
+Regards,
+Divya Hegde
+Kollur Industrial Gases Pvt. Ltd.
+
+> On 4 May 2025, procurement@tidewater.example wrote:
+> Could you confirm the current price of INR 3.98 per unit for PET bottles, 500ml still applies?

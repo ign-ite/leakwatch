@@ -1,0 +1,14 @@
+From: Kiran Bhat <accounts@konkan.example>
+To: procurement@tidewater.example
+Subject: Volume rebate on pallet wrap
+
+Hello,
+
+We are pleased to offer a volume rebate of 5% on pallet wrap once your purchases cross 189k units between October 1st, 2025 and 31/03/2026. The rebate applies to all purchases of pallet wrap in that period.
+
+Regards,
+Kiran Bhat
+Konkan Agro Foods Pvt. Ltd.
+
+> On 08/05/2025, procurement@tidewater.example wrote:
+> Is there any volume discount on pallet wrap? We currently pay INR 932.09 per unit.
