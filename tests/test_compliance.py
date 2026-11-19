@@ -75,3 +75,16 @@ def test_run_compliance_uses_prices_and_rebates_from_one_term_table():
     overcharges, rebates = run_compliance(terms, invoices, ORIGINAL)
     assert overcharges["recoverable"].tolist() == [300.0]
     assert rebates["rebate_due"].tolist() == [90.0]
+
+
+def test_run_compliance_skips_invoices_tab1_already_claims_in_full():
+    from contracts.compliance import run_compliance
+    terms = pd.DataFrame([
+        {"vendor_id": "V001", "item": "Malt (kg)", "unit_price": 100.0, "rebate_pct": None,
+         "rebate_threshold_qty": None, "effective_from": "2025-04-01", "effective_to": "2026-03-31"},
+        {"vendor_id": "V001", "item": "Malt (kg)", "unit_price": 90.0, "rebate_pct": None,
+         "rebate_threshold_qty": None, "effective_from": "2025-08-01", "effective_to": None},
+    ])
+    invoices = pd.DataFrame([inv("A-1", "2025-10-01", 100.0), inv("B-1", "2025-10-05", 100.0)])
+    overcharges, _ = run_compliance(terms, invoices, ORIGINAL, already_claimed={"B-1"})
+    assert overcharges["invoice_id"].tolist() == ["A-1"]

@@ -44,9 +44,15 @@ def missed_rebates(invoices: pd.DataFrame, rebates: pd.DataFrame) -> pd.DataFram
     return pd.DataFrame(rows)
 
 
-def run_compliance(terms: pd.DataFrame, invoices: pd.DataFrame,
-                   original: pd.DataFrame) -> tuple[pd.DataFrame, pd.DataFrame]:
-    """Both checks from one table of terms (true terms, or trusted extracted terms)."""
+def run_compliance(terms: pd.DataFrame, invoices: pd.DataFrame, original: pd.DataFrame,
+                   already_claimed: set[str] = frozenset()) -> tuple[pd.DataFrame, pd.DataFrame]:
+    """Both checks from one table of terms (true terms, or trusted extracted terms).
+
+    already_claimed: invoice ids Tab 1 recovers in full (duplicate payments). They are
+    skipped by both checks: their money is already claimed, and a duplicate is the same
+    units paid twice, not extra units towards a rebate threshold.
+    """
+    real = invoices[~invoices["invoice_id"].isin(already_claimed)]
     rebates = terms[terms["rebate_pct"].notna() & terms["rebate_threshold_qty"].notna()]
-    return (revised_price_overcharges(invoices, price_schedule(terms), original),
-            missed_rebates(invoices, rebates))
+    return (revised_price_overcharges(real, price_schedule(terms), original),
+            missed_rebates(real, rebates))
