@@ -2,7 +2,11 @@
 name = "leakwatch"
 version = "0.1.0"
 requires-python = ">=3.12"
-dependencies = ["pandas", "streamlit"]
+dependencies = [
+    "google-genai>=3.6.1",
+    "pandas",
+    "streamlit",
+]
 
 [dependency-groups]
 dev = ["pytest"]
