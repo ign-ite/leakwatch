@@ -47,9 +47,9 @@ surcharges, late-payment interest) that are not rebates.
    reached but never credited. The same checks run on the true terms, so the cost of extraction
    errors shows in rupees.
 
-Extraction runs once, offline; results are committed in `contracts/extractions.json`, so the app
-needs no API key. To rerun: put `GEMINI_API_KEY = "..."` in `.streamlit/secrets.toml` and run
-`uv run python -m contracts.extract`.
+Extraction runs once, offline, and saves `contracts/extractions.json`; the app reads that file, so
+it needs no API key, and the contract tab appears once the file exists. To run it: put
+`GEMINI_API_KEY = "..."` in `.streamlit/secrets.toml` and run `uv run python -m contracts.extract`.
 
 ## Run it
 
