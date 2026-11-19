@@ -58,7 +58,8 @@ def test_schema_violation_counts_as_malformed():
 
 
 def test_api_errors_fail_after_one_retry():
-    record = extract_document("C01", DOC, fake(RuntimeError("429 quota"), RuntimeError("429 quota")))
+    record = extract_document("C01", DOC, fake(RuntimeError("429 quota"), RuntimeError("429 quota")),
+                              retry_wait_s=0)
     assert record["status"] == "failed" and record["attempts"] == 2
     assert "429 quota" in record["error"]
     assert record["latency_s"] >= 0
@@ -74,3 +75,62 @@ def test_run_all_writes_every_document(tmp_path):
     saved = json.loads(out.read_text())
     assert saved["model"] == "fake-model"
     assert [(d["doc_id"], d["status"]) for d in saved["documents"]] == [("C01", "ok"), ("C02", "failed")]
+
+
+EMAIL = """Hello,
+the price for malt (per kg) will be revised to Rs. 48.00 per unit, effective 01/08/2025.
+> On 4 May 2025, procurement wrote:
+> Could you confirm the current price of Rs. 52.40 per unit for malt (per kg) still applies?"""
+
+
+def test_quotes_from_earlier_messages_are_not_evidence():
+    old = term("Could you confirm the current price of Rs. 52.40 per unit for malt (per kg) still applies?")
+    new = term("the price for malt (per kg) will be revised to Rs. 48.00 per unit", unit_price=48.0)
+    record = extract_document("E01", EMAIL, fake(ok_reply(old, new)))
+    assert [t["evidence_ok"] for t in record["terms"]] == [False, True]
+
+
+def test_the_extracted_value_must_appear_in_its_quote():
+    record = extract_document("C01", DOC, fake(ok_reply(term(unit_price=50.0))))
+    assert record["terms"][0]["evidence_ok"] is False
+
+
+def test_rebate_percentage_must_appear_in_its_quote():
+    doc = "We offer a volume rebate of 3% on malt once purchases cross 10k units."
+    rebate = term("a volume rebate of 3% on malt once purchases cross 10k units", unit_price=None,
+                  rebate_pct=3.0, rebate_threshold_qty=10000)
+    record = extract_document("E02", doc, fake(ok_reply(rebate, rebate | {"rebate_pct": 4.0})))
+    assert [t["evidence_ok"] for t in record["terms"]] == [True, False]
+
+
+def test_dates_must_be_real_iso_dates():
+    record = extract_document("C01", DOC, fake(ok_reply(term(effective_from="2025-8-1")),
+                                               ok_reply(term(effective_from="2025-8-1"))))
+    assert record["status"] == "failed"
+    ok = extract_document("C01", DOC, fake(ok_reply(term())))
+    assert ok["terms"][0]["effective_from"] == "2025-04-01"
+
+
+def test_api_errors_wait_before_retrying(monkeypatch):
+    waits = []
+    monkeypatch.setattr("contracts.extract.time.sleep", waits.append)
+    extract_document("C01", DOC, fake(RuntimeError("429"), ok_reply(term())), retry_wait_s=30)
+    assert waits == [30]
+
+
+def test_invalid_output_retries_without_waiting(monkeypatch):
+    waits = []
+    monkeypatch.setattr("contracts.extract.time.sleep", waits.append)
+    extract_document("C01", DOC, fake("{bad", ok_reply(term())), retry_wait_s=30)
+    assert waits == []
+
+
+def test_run_all_skips_documents_already_extracted(tmp_path):
+    docs = tmp_path / "documents"
+    docs.mkdir()
+    (docs / "C01.txt").write_text(DOC)
+    (docs / "C02.txt").write_text(DOC)
+    out = tmp_path / "extractions.json"
+    run_all(docs, out, fake(ok_reply(term()), RuntimeError("x"), RuntimeError("x")), model="m")
+    run_all(docs, out, fake(ok_reply(term())), model="m")       # only C02 is called again
+    assert [d["status"] for d in json.loads(out.read_text())["documents"]] == ["ok", "ok"]

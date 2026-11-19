@@ -5,6 +5,7 @@ from datetime import date, timedelta
 
 import pandas as pd
 
+from contracts.generate_contracts import TERM_END
 from leakage.clean import match_vendor, normalize_vendor
 from leakage.generate import ITEMS
 
@@ -35,18 +36,26 @@ def to_ids(terms: pd.DataFrame, vendors: pd.DataFrame) -> pd.DataFrame:
     """Replace free-text vendor and item names with vendor_id and catalogue item."""
     known = {normalize_vendor(n): v for n, v in zip(vendors["vendor_name"], vendors["vendor_id"])}
     out = terms.copy()
-    out["vendor_id"] = [match_vendor(v, known)[0] for v in out["vendor"]]
+    matches = [match_vendor(v, known) for v in out["vendor"]]
+    out["vendor_id"] = [vendor_id for vendor_id, _ in matches]
+    out["vendor_match_score"] = [round(score, 3) for _, score in matches]
     out["item"] = [map_item(i) for i in out["item"]]
     return out
 
 
 def price_schedule(terms: pd.DataFrame) -> pd.DataFrame:
     """One row per (vendor, item, price period). A later effective price replaces the earlier
-    one from its start date; an open-ended revision runs to the end of the contract."""
-    prices = terms[terms["unit_price"].notna()].sort_values(["vendor_id", "item", "effective_from"])
+    one from its start date; an open-ended revision runs to the end of the contract. If two
+    prices start on the same day, an email's beats a contract's (it is the amendment)."""
+    prices = terms[terms["unit_price"].notna()]
+    order = ["vendor_id", "item", "effective_from"] + (["source"] if "source" in prices else [])
+    prices = (prices.sort_values(order)   # "contract" sorts before "email"
+              .drop_duplicates(["vendor_id", "item", "effective_from"], keep="last"))
     rows = []
     for (vendor_id, item), group in prices.groupby(["vendor_id", "item"], sort=False):
         contract_end = group["effective_to"].dropna().max()
+        if pd.isna(contract_end):   # no contract row was extracted: assume the standard term
+            contract_end = TERM_END.isoformat()
         starts = list(group["effective_from"])
         for k, term in enumerate(group.itertuples(index=False)):
             if k + 1 < len(starts):

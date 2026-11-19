@@ -93,3 +93,11 @@ def test_run_compliance_skips_invoices_tab1_already_claims_in_full():
 def test_missed_rebates_with_no_terms_still_has_columns():
     out = missed_rebates(pd.DataFrame([inv("A-1", "2025-11-01", 100.0)]), REBATE.iloc[0:0])
     assert out.empty and "rebate_due" in out.columns
+
+
+def test_a_rebate_extracted_twice_is_claimed_once():
+    from contracts.compliance import run_compliance
+    rebate = REBATE.iloc[0].to_dict() | {"unit_price": None}
+    _, rebates = run_compliance(pd.DataFrame([rebate, rebate]),
+                                pd.DataFrame([inv("A-1", "2025-10-01", 100.0, qty=30)]), ORIGINAL)
+    assert rebates["rebate_due"].tolist() == [90.0]

@@ -44,4 +44,7 @@ def test_app_renders_contract_tab_with_extractions(monkeypatch, tmp_path):
     assert [t.label for t in at.tabs] == ["Invoice leakage", "Contract terms"]
     labels = {m.label: m.value for m in at.metric}
     assert labels["Fields exactly right"] == "100%"
+    assert labels["Extra terms"] == "0"
     assert labels["Documents that failed"] == "1 of 40"
+    # with perfect extraction, the trusted-terms path must recover exactly what the true terms do
+    assert labels["Recoverable with extracted terms"] == labels["Recoverable with the true terms"]

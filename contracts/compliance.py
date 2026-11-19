@@ -56,6 +56,8 @@ def run_compliance(terms: pd.DataFrame, invoices: pd.DataFrame, original: pd.Dat
     units paid twice, not extra units towards a rebate threshold.
     """
     real = invoices[~invoices["invoice_id"].isin(already_claimed)]
-    rebates = terms[terms["rebate_pct"].notna() & terms["rebate_threshold_qty"].notna()]
+    rebates = (terms[terms["rebate_pct"].notna() & terms["rebate_threshold_qty"].notna()]
+               .drop_duplicates(["vendor_id", "item", "rebate_pct", "rebate_threshold_qty",
+                                 "effective_from", "effective_to"]))   # same rebate quoted twice
     return (revised_price_overcharges(real, price_schedule(terms), original),
             missed_rebates(real, rebates))

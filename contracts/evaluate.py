@@ -2,6 +2,7 @@
 import pandas as pd
 
 from contracts.terms import to_ids
+from leakage.clean import AUTO_MATCH
 
 FIELDS = ["unit_price", "rebate_pct", "rebate_threshold_qty", "effective_from", "effective_to"]
 KEY_COLUMNS = ["doc_id", "vendor_id", "item"]
@@ -41,13 +42,31 @@ def _match(extracted: pd.DataFrame, truth: pd.DataFrame) -> tuple[list, list]:
     return pairs, list(pool.values())
 
 
-def field_accuracy(extracted: pd.DataFrame, truth: pd.DataFrame) -> pd.DataFrame:
-    """Share of true terms found, then share with each field exactly right (missing = wrong)."""
+def field_accuracy(extracted: pd.DataFrame, truth: pd.DataFrame,
+                   found_only: bool = False) -> pd.DataFrame:
+    """Share of true terms found, then, per field, the share of true values extracted exactly.
+
+    Each field is scored only over true terms that have a value for it (a contract price has
+    no rebate fields), so empty fields can't pad the score. wrongly_filled counts values the
+    model added where the truth is empty. found_only scores just the terms that were found
+    (missed terms already show in the 'found' row)."""
     pairs, _ = _match(extracted, truth)
-    rows = [("found", sum(e is not None for _, e in pairs))]
-    rows += [(f, sum(e is not None and _same(e[f], t[f]) for t, e in pairs)) for f in FIELDS]
-    return pd.DataFrame([{"field": f, "correct": c, "total": len(pairs),
-                          "accuracy": round(c / len(pairs), 3)} for f, c in rows])
+    found = sum(e is not None for _, e in pairs)
+    rows = [{"field": "found", "correct": found, "total": len(pairs), "wrongly_filled": 0}]
+    for f in FIELDS:
+        scored = [(t, e) for t, e in pairs if pd.notna(t[f]) and (e is not None or not found_only)]
+        rows.append({"field": f, "total": len(scored),
+                     "correct": sum(e is not None and _same(e[f], t[f]) for t, e in scored),
+                     "wrongly_filled": sum(e is not None and pd.isna(t[f]) and pd.notna(e[f])
+                                           for t, e in pairs)})
+    out = pd.DataFrame(rows, columns=["field", "correct", "total", "wrongly_filled"])
+    out["accuracy"] = [round(c / t, 3) if t else None for c, t in zip(out["correct"], out["total"])]
+    return out
+
+
+def extra_terms(extracted: pd.DataFrame, truth: pd.DataFrame) -> int:
+    """Extracted terms that match no true term: hallucinations, or traps the model fell for."""
+    return len(_match(extracted, truth)[1])
 
 
 def wrong_extractions(extracted: pd.DataFrame, truth: pd.DataFrame) -> pd.DataFrame:
@@ -75,6 +94,8 @@ def _review_reasons(extracted: pd.DataFrame) -> pd.Series:
             reasons.append("evidence quote not found in document")
         if pd.isna(t["vendor_id"]) or pd.isna(t["item"]):
             reasons.append("vendor or item not recognised")
+        elif t["vendor_match_score"] < AUTO_MATCH:
+            reasons.append(f"vendor name matched loosely ({t['vendor_match_score']:g})")
         if pd.isna(t["unit_price"]) and pd.isna(t["rebate_pct"]):
             reasons.append("no price or rebate")
         if pd.isna(t["effective_from"]):

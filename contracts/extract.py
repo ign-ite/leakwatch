@@ -12,14 +12,16 @@ import json
 import time
 import tomllib
 from collections.abc import Callable
+from datetime import date
 from pathlib import Path
 from typing import Literal
 
-from pydantic import BaseModel
+from pydantic import BaseModel, ValidationError
 
 ROOT = Path(__file__).resolve().parent.parent
 MODEL = "gemini-2.5-flash"
 PAUSE_S = 6.0  # stay under the free tier's requests-per-minute limit
+RETRY_WAIT_S = 30.0  # after an API error (usually a rate limit), wait before the one retry
 
 # prompt -> (JSON text, {"prompt_tokens": n, "output_tokens": n})
 ModelCall = Callable[[str], tuple[str, dict]]
@@ -31,8 +33,8 @@ class Term(BaseModel):
     unit_price: float | None
     rebate_pct: float | None
     rebate_threshold_qty: int | None
-    effective_from: str | None
-    effective_to: str | None
+    effective_from: date | None
+    effective_to: date | None
     source: Literal["contract", "email"]
     confidence: float
     evidence_quote: str
@@ -71,11 +73,26 @@ def _squash(s: str) -> str:
 
 
 def evidence_ok(quote: str, text: str) -> bool:
-    return bool(quote.strip()) and _squash(quote) in _squash(text)
+    """The quote appears verbatim (ignoring whitespace) in the document's current text.
+    Lines starting with '>' quote earlier messages, so they are not evidence."""
+    current = "\n".join(line for line in text.splitlines() if not line.lstrip().startswith(">"))
+    return bool(quote.strip()) and _squash(quote) in _squash(current)
 
 
-def extract_document(doc_id: str, text: str, call_model: ModelCall) -> dict:
-    """Call the model (retrying once on any error or invalid output) and check evidence."""
+def value_in_quote(term: dict) -> bool:
+    """The extracted price or rebate percentage is written in the quote itself."""
+    quote = term["evidence_quote"]
+    if term["unit_price"] is not None and f"{term['unit_price']:,.2f}" not in quote:
+        return False
+    if term["rebate_pct"] is not None and f"{term['rebate_pct']:g}%" not in quote:
+        return False
+    return True
+
+
+def extract_document(doc_id: str, text: str, call_model: ModelCall,
+                     retry_wait_s: float = RETRY_WAIT_S) -> dict:
+    """Call the model (retrying once on any error or invalid output) and check evidence.
+    Invalid output is retried at once; an API error (usually a rate limit) after a wait."""
     record = {"doc_id": doc_id, "status": "failed", "terms": [], "error": None,
               "attempts": 0, "prompt_tokens": 0, "output_tokens": 0, "latency_s": 0.0}
     for _ in range(2):
@@ -86,24 +103,39 @@ def extract_document(doc_id: str, text: str, call_model: ModelCall) -> dict:
             record["prompt_tokens"] += usage["prompt_tokens"]
             record["output_tokens"] += usage["output_tokens"]
             parsed = Extraction.model_validate_json(raw)
-        except Exception as err:  # API error, malformed JSON or schema violation: retry once
+        except ValidationError as err:  # malformed JSON or schema violation
+            record["error"] = f"ValidationError: {err}"[:300]
+            continue
+        except Exception as err:  # API error
             record["error"] = f"{type(err).__name__}: {err}"[:300]
+            if record["attempts"] == 1:
+                time.sleep(retry_wait_s)
             continue
         finally:
             record["latency_s"] = round(record["latency_s"] + time.perf_counter() - start, 3)
-        record["terms"] = [t.model_dump() | {"evidence_ok": evidence_ok(t.evidence_quote, text)}
-                           for t in parsed.terms]
+        terms = [t.model_dump(mode="json") for t in parsed.terms]   # dates back to "YYYY-MM-DD"
+        record["terms"] = [t | {"evidence_ok": evidence_ok(t["evidence_quote"], text) and value_in_quote(t)}
+                           for t in terms]
         record.update(status="ok", error=None)
         break
     return record
 
 
 def run_all(doc_dir: Path, out_path: Path, call_model: ModelCall, model: str = MODEL,
-            pause_s: float = 0.0) -> None:
+            pause_s: float = 0.0, retry_wait_s: float = 0.0) -> None:
+    """Extract every document. Documents already extracted successfully in out_path are kept,
+    so a run cut short by a daily quota can be finished later. Saves after each document."""
+    done = {}
+    if out_path.exists():
+        done = {d["doc_id"]: d for d in json.loads(out_path.read_text())["documents"] if d["status"] == "ok"}
     records = []
     for path in sorted(doc_dir.glob("*.txt")):
-        records.append(extract_document(path.stem, path.read_text(), call_model))
+        if path.stem in done:
+            records.append(done[path.stem])
+            continue
+        records.append(extract_document(path.stem, path.read_text(), call_model, retry_wait_s))
         print(f"{path.stem}: {records[-1]['status']}", flush=True)
+        out_path.write_text(json.dumps({"model": model, "documents": records}, indent=2) + "\n")
         time.sleep(pause_s)
     out_path.write_text(json.dumps({"model": model, "documents": records}, indent=2) + "\n")
 
@@ -119,8 +151,10 @@ def gemini_call(api_key: str, model: str = MODEL) -> ModelCall:
     def call(prompt: str) -> tuple[str, dict]:
         response = client.models.generate_content(model=model, contents=prompt, config=config)
         usage = response.usage_metadata
+        # Thinking tokens are billed as output but not included in candidates_token_count.
         return response.text, {"prompt_tokens": usage.prompt_token_count or 0,
-                               "output_tokens": usage.candidates_token_count or 0}
+                               "output_tokens": (usage.candidates_token_count or 0)
+                               + (usage.thoughts_token_count or 0)}
     return call
 
 
@@ -128,4 +162,5 @@ if __name__ == "__main__":
     secrets = tomllib.loads((ROOT / ".streamlit" / "secrets.toml").read_text())
     model = secrets.get("GEMINI_MODEL", MODEL)
     run_all(ROOT / "data" / "documents", Path(__file__).parent / "extractions.json",
-            gemini_call(secrets["GEMINI_API_KEY"], model), model=model, pause_s=PAUSE_S)
+            gemini_call(secrets["GEMINI_API_KEY"], model), model=model, pause_s=PAUSE_S,
+            retry_wait_s=RETRY_WAIT_S)

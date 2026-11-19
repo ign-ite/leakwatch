@@ -54,3 +54,21 @@ def test_price_schedule_keeps_vendors_and_items_separate():
 def test_price_schedule_ignores_rebate_terms():
     rebate = _price(None, "2025-10-01", "2026-03-31") | {"rebate_pct": 3.0, "rebate_threshold_qty": 1000}
     assert len(price_schedule(pd.DataFrame([_price(100.0, "2025-04-01", "2026-03-31"), rebate]))) == 1
+
+
+def test_price_schedule_same_start_date_prefers_the_email():
+    contract = _price(100.0, "2025-04-01", "2026-03-31") | {"source": "contract"}
+    quoted_old = _price(100.0, "2025-08-01", None) | {"source": "contract"}
+    revision = _price(90.0, "2025-08-01", None) | {"source": "email"}
+    out = price_schedule(pd.DataFrame([contract, revision, quoted_old]))
+    assert out[["unit_price", "valid_from"]].values.tolist() == [[100.0, "2025-04-01"], [90.0, "2025-08-01"]]
+
+
+def test_revision_without_a_contract_row_runs_to_the_term_end():
+    out = price_schedule(pd.DataFrame([_price(90.0, "2025-08-01", None)]))
+    assert out["valid_to"].tolist() == ["2026-03-31"]
+
+
+def test_to_ids_keeps_the_vendor_match_score():
+    out = to_ids(pd.DataFrame({"vendor": ["Konkan Agro"], "item": ["malt"]}), VENDORS)
+    assert out["vendor_id"][0] == "V001" and out["vendor_match_score"][0] < 0.9

@@ -8,8 +8,8 @@ import pandas as pd
 import streamlit as st
 
 from contracts.compliance import run_compliance
-from contracts.evaluate import (FIELDS, extracted_terms, field_accuracy, review_queue,
-                                trusted_terms, truth_terms, wrong_extractions)
+from contracts.evaluate import (FIELDS, extra_terms, extracted_terms, field_accuracy,
+                                review_queue, trusted_terms, truth_terms, wrong_extractions)
 from leakage.clean import UPLOAD_COLUMNS, prepare_upload
 from leakage.load import CHECKS, sql_text
 from leakage.memo import build_memo, inr
@@ -144,18 +144,24 @@ def contracts_tab() -> None:
         "verbatim is not trusted. Only trusted terms are checked against the invoices from the first tab.")
 
     accuracy = field_accuracy(extracted, truth).set_index("field")
-    found = accuracy.loc["found", "correct"]
-    fields_right = accuracy.loc[FIELDS, "correct"].sum() / (found * len(FIELDS)) if found else 0
+    found_terms = field_accuracy(extracted, truth, found_only=True).set_index("field").loc[FIELDS]
+    fields_right = found_terms["correct"].sum() / found_terms["total"].sum() if found_terms["total"].sum() else 0
     failed = [d for d in docs.values() if d["status"] == "failed"]
-    c1, c2, c3 = st.columns(3)
+    c1, c2, c3, c4 = st.columns(4)
     c1.metric("Terms found", f"{accuracy.loc['found', 'accuracy']:.0%}")
-    c2.metric("Fields exactly right", f"{fields_right:.0%}")
-    c3.metric("Documents that failed", f"{len(failed)} of {len(docs)}")
+    c2.metric("Fields exactly right", f"{fields_right:.0%}",
+              help="Over the terms that were found, counting only fields the document states.")
+    c3.metric("Extra terms", extra_terms(extracted, truth),
+              help="Extracted terms that aren't in the document's answer key: hallucinations, or "
+                   "traps such as a quoted old price or a freight surcharge.")
+    c4.metric("Documents that failed", f"{len(failed)} of {len(docs)}")
     if failed:
         st.warning("Failed: " + "; ".join(f"{d['doc_id']} ({d['error']})" for d in failed))
 
     st.subheader("Accuracy per field")
     st.dataframe(accuracy.reset_index(), hide_index=True)
+    st.caption("Each field is scored only over terms whose document states it; wrongly_filled counts "
+               "values the model added where the document states none (e.g. an end date it invented).")
     with st.expander("Every wrong extraction"):
         st.dataframe(wrong_extractions(extracted, truth), hide_index=True, width="stretch")
 

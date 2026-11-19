@@ -66,7 +66,9 @@ Regenerate the data with `uv run python -m leakage.generate`, then
 
 - Synthetic data is cleaner than real AP data.
 - No multi-currency invoices or partial payments.
-- Confidence scores are hand-set, not learned; the model's self-reported confidence is only a
-  first filter.
+- Confidence scores are hand-set, not learned. The model's self-reported confidence is
+  uncalibrated and rarely low, so the evidence checks do most of the filtering.
+- The evidence check proves the quote is in the document (not in a quoted earlier message) and
+  that the price or rebate % is written in it; it can't prove dates or quantities came from it.
 - Documents are generated from templates, so they are tidier than scanned contracts.
 - Exact matches have no time limit, so a reused invoice number a year later is flagged.

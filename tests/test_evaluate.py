@@ -75,3 +75,35 @@ def test_trusted_terms_drop_the_review_queue():
     from contracts.evaluate import trusted_terms
     trusted = trusted_terms(extracted_terms(EXTRACTIONS, VENDORS))
     assert len(trusted) == 3 and (trusted["confidence"] >= 0.7).all()
+
+
+def test_fields_are_scored_only_where_the_truth_has_a_value():
+    acc = field_accuracy(extracted_terms(EXTRACTIONS, VENDORS), truth_terms(KEY)).set_index("field")
+    assert acc.loc["rebate_pct", "total"] == 0 and pd.isna(acc.loc["rebate_pct", "accuracy"])
+    assert acc.loc["effective_to", "total"] == 2           # the email revision has no end date
+
+
+def test_a_value_filled_in_where_the_truth_is_empty_is_counted():
+    wrong_end = {"model": "m", "documents": [{"doc_id": "E01", "status": "ok",
+                                              "terms": [term("malt (per kg)", 48.0, "2025-08-01", "2026-03-31")]}]}
+    acc = field_accuracy(extracted_terms(wrong_end, VENDORS), truth_terms(KEY)).set_index("field")
+    assert acc.loc["effective_to", "wrongly_filled"] == 1
+
+
+def test_found_only_scores_just_the_terms_that_were_extracted():
+    only_malt = {"model": "m", "documents": [{"doc_id": "C01", "status": "ok",
+                                              "terms": [term("malt (per kg)", 52.4)]}]}
+    acc = field_accuracy(extracted_terms(only_malt, VENDORS), truth_terms(KEY), found_only=True)
+    assert acc.set_index("field").loc["unit_price", "accuracy"] == 1.0
+
+
+def test_extra_terms_are_counted():
+    from contracts.evaluate import extra_terms
+    assert extra_terms(extracted_terms(EXTRACTIONS, VENDORS), truth_terms(KEY)) == 1
+
+
+def test_loosely_matched_vendor_goes_to_review():
+    loose = {"model": "m", "documents": [{"doc_id": "C01", "status": "ok",
+                                          "terms": [term("malt (per kg)", 52.4) | {"vendor": "Konkan Agro"}]}]}
+    queue = review_queue(extracted_terms(loose, VENDORS))
+    assert queue.iloc[0]["why"].startswith("vendor name matched loosely")
