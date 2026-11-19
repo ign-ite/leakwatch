@@ -2,6 +2,7 @@
 import pandas as pd
 
 from contracts.generate_contracts import TERM_END
+from contracts.terms import price_schedule
 
 
 def revised_price_overcharges(invoices: pd.DataFrame, schedule: pd.DataFrame,
@@ -41,3 +42,11 @@ def missed_rebates(invoices: pd.DataFrame, rebates: pd.DataFrame) -> pd.DataFram
                      "qty_in_window": qty, "spend_in_window": round(spend, 2), "reached": reached,
                      "rebate_due": round(spend * t.rebate_pct / 100, 2) if reached else 0.0})
     return pd.DataFrame(rows)
+
+
+def run_compliance(terms: pd.DataFrame, invoices: pd.DataFrame,
+                   original: pd.DataFrame) -> tuple[pd.DataFrame, pd.DataFrame]:
+    """Both checks from one table of terms (true terms, or trusted extracted terms)."""
+    rebates = terms[terms["rebate_pct"].notna() & terms["rebate_threshold_qty"].notna()]
+    return (revised_price_overcharges(invoices, price_schedule(terms), original),
+            missed_rebates(invoices, rebates))
