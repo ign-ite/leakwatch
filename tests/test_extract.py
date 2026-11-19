@@ -134,3 +134,37 @@ def test_run_all_skips_documents_already_extracted(tmp_path):
     run_all(docs, out, fake(ok_reply(term()), RuntimeError("x"), RuntimeError("x")), model="m")
     run_all(docs, out, fake(ok_reply(term())), model="m")       # only C02 is called again
     assert [d["status"] for d in json.loads(out.read_text())["documents"]] == ["ok", "ok"]
+
+
+def test_interrupted_resume_keeps_every_saved_result(tmp_path, monkeypatch):
+    docs = tmp_path / "documents"
+    docs.mkdir()
+    for doc_id in ("C01", "C02", "C03"):
+        (docs / f"{doc_id}.txt").write_text(DOC)
+    out = tmp_path / "extractions.json"
+    run_all(docs, out, fake(RuntimeError("x"), RuntimeError("x"), ok_reply(term()), ok_reply(term())), model="m")
+
+    def stop(seconds):                # Ctrl-C during the pause after C01 is re-extracted and saved
+        raise KeyboardInterrupt
+    monkeypatch.setattr("contracts.extract.time.sleep", stop)
+    try:
+        run_all(docs, out, fake(ok_reply(term())), model="m", pause_s=6)
+    except KeyboardInterrupt:
+        pass
+    saved = {d["doc_id"]: d["status"] for d in json.loads(out.read_text())["documents"]}
+    assert saved == {"C01": "ok", "C02": "ok", "C03": "ok"}
+
+
+def test_retry_wait_is_not_counted_as_latency(monkeypatch):
+    now = [0.0]                                          # a fake clock that sleeping advances
+    monkeypatch.setattr("contracts.extract.time.perf_counter", lambda: now[0])
+    monkeypatch.setattr("contracts.extract.time.sleep", lambda s: now.__setitem__(0, now[0] + s))
+
+    def slow(prompt, replies=[RuntimeError("429"), ok_reply(term())]):
+        now[0] += 1.0                                    # each API call takes 1 s
+        reply = replies.pop(0)
+        if isinstance(reply, Exception):
+            raise reply
+        return reply, {"prompt_tokens": 1, "output_tokens": 1}
+    record = extract_document("C01", DOC, slow, retry_wait_s=30)
+    assert record["latency_s"] == 2.0

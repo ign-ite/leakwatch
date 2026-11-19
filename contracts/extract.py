@@ -95,8 +95,10 @@ def extract_document(doc_id: str, text: str, call_model: ModelCall,
     Invalid output is retried at once; an API error (usually a rate limit) after a wait."""
     record = {"doc_id": doc_id, "status": "failed", "terms": [], "error": None,
               "attempts": 0, "prompt_tokens": 0, "output_tokens": 0, "latency_s": 0.0}
-    for _ in range(2):
-        record["attempts"] += 1
+    for attempt in (1, 2):
+        if attempt == 2 and record["error"] and not record["error"].startswith("ValidationError"):
+            time.sleep(retry_wait_s)   # an API error (usually a rate limit): wait, untimed
+        record["attempts"] = attempt
         start = time.perf_counter()
         try:
             raw, usage = call_model(PROMPT.format(text=text))
@@ -108,8 +110,6 @@ def extract_document(doc_id: str, text: str, call_model: ModelCall,
             continue
         except Exception as err:  # API error
             record["error"] = f"{type(err).__name__}: {err}"[:300]
-            if record["attempts"] == 1:
-                time.sleep(retry_wait_s)
             continue
         finally:
             record["latency_s"] = round(record["latency_s"] + time.perf_counter() - start, 3)
@@ -125,19 +125,22 @@ def run_all(doc_dir: Path, out_path: Path, call_model: ModelCall, model: str = M
             pause_s: float = 0.0, retry_wait_s: float = 0.0) -> None:
     """Extract every document. Documents already extracted successfully in out_path are kept,
     so a run cut short by a daily quota can be finished later. Saves after each document."""
-    done = {}
+    results = {}   # doc_id -> record; every saved record stays until it is replaced
     if out_path.exists():
-        done = {d["doc_id"]: d for d in json.loads(out_path.read_text())["documents"] if d["status"] == "ok"}
-    records = []
-    for path in sorted(doc_dir.glob("*.txt")):
-        if path.stem in done:
-            records.append(done[path.stem])
-            continue
-        records.append(extract_document(path.stem, path.read_text(), call_model, retry_wait_s))
-        print(f"{path.stem}: {records[-1]['status']}", flush=True)
+        results = {d["doc_id"]: d for d in json.loads(out_path.read_text())["documents"]}
+
+    def save() -> None:
+        records = [results[k] for k in sorted(results)]
         out_path.write_text(json.dumps({"model": model, "documents": records}, indent=2) + "\n")
+
+    for path in sorted(doc_dir.glob("*.txt")):
+        if results.get(path.stem, {}).get("status") == "ok":
+            continue
+        results[path.stem] = extract_document(path.stem, path.read_text(), call_model, retry_wait_s)
+        print(f"{path.stem}: {results[path.stem]['status']}", flush=True)
+        save()
         time.sleep(pause_s)
-    out_path.write_text(json.dumps({"model": model, "documents": records}, indent=2) + "\n")
+    save()
 
 
 def gemini_call(api_key: str, model: str = MODEL) -> ModelCall:
