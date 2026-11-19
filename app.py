@@ -1,9 +1,15 @@
 """Leakwatch: find money leaking out of accounts payable."""
+import html
+import json
+import os
 from pathlib import Path
 
 import pandas as pd
 import streamlit as st
 
+from contracts.compliance import run_compliance
+from contracts.evaluate import (FIELDS, extracted_terms, field_accuracy, review_queue,
+                                trusted_terms, truth_terms, wrong_extractions)
 from leakage.clean import UPLOAD_COLUMNS, prepare_upload
 from leakage.load import CHECKS, sql_text
 from leakage.memo import build_memo, inr
@@ -14,6 +20,7 @@ from leakage.score import (REVIEW_PENALTY, miss_reasons, scorecard, top_n_share,
 ROOT = Path(__file__).parent
 DATA = ROOT / "data"
 VENDORS = ROOT / "shared" / "vendors.csv"
+EXTRACTIONS = Path(os.environ.get("LEAKWATCH_EXTRACTIONS", ROOT / "contracts" / "extractions.json"))
 CHECK_LABELS = {"exact_duplicate": "Exact duplicate", "ocr_duplicate": "OCR duplicate",
                 "price_overcharge": "Price overcharge"}
 
@@ -114,8 +121,105 @@ def leakage_tab() -> None:
             "next step is limiting matches to a window or fiscal year.")
 
 
+def highlighted(text: str, quotes: list[str]) -> str:
+    """Document text as HTML with each evidence quote that appears verbatim marked."""
+    out = html.escape(text)
+    for q in sorted(set(quotes), key=len, reverse=True):
+        if q.strip() and q in text:
+            out = out.replace(html.escape(q), f"<mark>{html.escape(q)}</mark>")
+    return f'<pre style="white-space: pre-wrap; font-size: 0.85rem">{out}</pre>'
+
+
+def contracts_tab() -> None:
+    invoices, findings, _ = demo()
+    extractions = json.loads(EXTRACTIONS.read_text())
+    vendors = pd.read_csv(VENDORS)
+    key = json.loads((DATA / "contract_answer_key.json").read_text())
+    extracted, truth = extracted_terms(extractions, vendors), truth_terms(key)
+    docs = {d["doc_id"]: d for d in extractions["documents"]}
+    st.markdown(
+        f"{len(docs)} supplier documents (rate contracts and emails that revise prices or offer "
+        f"volume rebates) are read by **{extractions['model']}**, which returns each pricing or "
+        "rebate term with a quote from the document as evidence. A term whose quote can't be found "
+        "verbatim is not trusted. Only trusted terms are checked against the invoices from the first tab.")
+
+    accuracy = field_accuracy(extracted, truth).set_index("field")
+    found = accuracy.loc["found", "correct"]
+    fields_right = accuracy.loc[FIELDS, "correct"].sum() / (found * len(FIELDS)) if found else 0
+    failed = [d for d in docs.values() if d["status"] == "failed"]
+    c1, c2, c3 = st.columns(3)
+    c1.metric("Terms found", f"{accuracy.loc['found', 'accuracy']:.0%}")
+    c2.metric("Fields exactly right", f"{fields_right:.0%}")
+    c3.metric("Documents that failed", f"{len(failed)} of {len(docs)}")
+    if failed:
+        st.warning("Failed: " + "; ".join(f"{d['doc_id']} ({d['error']})" for d in failed))
+
+    st.subheader("Accuracy per field")
+    st.dataframe(accuracy.reset_index(), hide_index=True)
+    with st.expander("Every wrong extraction"):
+        st.dataframe(wrong_extractions(extracted, truth), hide_index=True, width="stretch")
+
+    st.subheader("Review queue")
+    st.caption("Low confidence (< 0.7), an evidence quote not in the document, an unknown vendor "
+               "or item, or a missing price or date. These are not used for claims.")
+    queue = review_queue(extracted)
+    st.dataframe(queue[["doc_id", "vendor", "item", "unit_price", "rebate_pct", "confidence",
+                        "evidence_quote", "why"]], hide_index=True, width="stretch")
+
+    st.subheader("Money the first tab can't see")
+    claimed = set(findings.loc[findings["check_type"].isin(["exact_duplicate", "ocr_duplicate"]),
+                               "invoice_id"])
+    original = pd.read_csv(DATA / "contracts.csv")
+    over, rebates = run_compliance(trusted_terms(extracted), invoices, original, claimed)
+    true_over, true_rebates = run_compliance(truth, invoices, original, claimed)
+    found_value = over["recoverable"].sum() + rebates["rebate_due"].sum()
+    true_value = true_over["recoverable"].sum() + true_rebates["rebate_due"].sum()
+    c1, c2 = st.columns(2)
+    c1.metric("Recoverable with extracted terms", inr(found_value))
+    c2.metric("Recoverable with the true terms", inr(true_value))
+    st.caption("The gap is what extraction errors and review-queue holds cost. Overcharges count only "
+               "the part below the original contract price (anything above is a first-tab finding); "
+               "duplicate payments, already claimed in full, are skipped.")
+    left, right = st.columns(2)
+    left.markdown("**Billed above a revised price**")
+    if len(over):
+        left.dataframe(over.groupby(["vendor_id", "item"])["recoverable"].agg(["count", "sum"])
+                       .round(0).reset_index(), hide_index=True)
+    right.markdown("**Volume rebates**")
+    if len(rebates):
+        right.dataframe(rebates[["vendor_id", "item", "threshold_qty", "qty_in_window", "reached",
+                                 "rebate_due"]], hide_index=True)
+
+    st.subheader("Look at a document")
+    doc_id = st.selectbox("Document", list(docs))
+    doc = docs[doc_id]
+    text = (DATA / "documents" / f"{doc_id}.txt").read_text()
+    left, right = st.columns(2)
+    left.markdown(highlighted(text, [t["evidence_quote"] for t in doc["terms"]]), unsafe_allow_html=True)
+    if doc["terms"]:
+        right.dataframe(pd.DataFrame(doc["terms"])[["item", "unit_price", "rebate_pct",
+                        "rebate_threshold_qty", "effective_from", "effective_to", "confidence",
+                        "evidence_ok"]], hide_index=True)
+    else:
+        right.info(f"No terms: {doc['error']}")
+
+    st.subheader("Cost and speed")
+    usage = pd.DataFrame(docs.values())[["doc_id", "status", "attempts", "prompt_tokens",
+                                         "output_tokens", "latency_s"]]
+    st.caption(f"{usage['prompt_tokens'].sum():,} input and {usage['output_tokens'].sum():,} output "
+               f"tokens in total; median {usage['latency_s'].median():.1f} s per document.")
+    with st.expander("Per document"):
+        st.dataframe(usage, hide_index=True)
+
+
 st.title("Leakwatch")
-st.caption("Finding money that leaks out of accounts payable: duplicate payments and overcharges.")
-(tab1,) = st.tabs(["Invoice leakage"])
+st.caption("Finding money that leaks out of accounts payable: duplicate payments, "
+           "overcharges and contract terms that were never applied.")
+if EXTRACTIONS.exists():
+    tab1, tab2 = st.tabs(["Invoice leakage", "Contract terms"])
+    with tab2:
+        contracts_tab()
+else:
+    (tab1,) = st.tabs(["Invoice leakage"])
 with tab1:
     leakage_tab()

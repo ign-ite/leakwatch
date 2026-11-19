@@ -88,3 +88,8 @@ def test_run_compliance_skips_invoices_tab1_already_claims_in_full():
     invoices = pd.DataFrame([inv("A-1", "2025-10-01", 100.0), inv("B-1", "2025-10-05", 100.0)])
     overcharges, _ = run_compliance(terms, invoices, ORIGINAL, already_claimed={"B-1"})
     assert overcharges["invoice_id"].tolist() == ["A-1"]
+
+
+def test_missed_rebates_with_no_terms_still_has_columns():
+    out = missed_rebates(pd.DataFrame([inv("A-1", "2025-11-01", 100.0)]), REBATE.iloc[0:0])
+    assert out.empty and "rebate_due" in out.columns

@@ -4,6 +4,9 @@ import pandas as pd
 from contracts.generate_contracts import TERM_END
 from contracts.terms import price_schedule
 
+REBATE_COLUMNS = ["vendor_id", "item", "window", "rebate_pct", "threshold_qty", "qty_in_window",
+                  "spend_in_window", "reached", "rebate_due"]
+
 
 def revised_price_overcharges(invoices: pd.DataFrame, schedule: pd.DataFrame,
                               original: pd.DataFrame) -> pd.DataFrame:
@@ -41,7 +44,7 @@ def missed_rebates(invoices: pd.DataFrame, rebates: pd.DataFrame) -> pd.DataFram
                      "rebate_pct": t.rebate_pct, "threshold_qty": int(t.rebate_threshold_qty),
                      "qty_in_window": qty, "spend_in_window": round(spend, 2), "reached": reached,
                      "rebate_due": round(spend * t.rebate_pct / 100, 2) if reached else 0.0})
-    return pd.DataFrame(rows)
+    return pd.DataFrame(rows, columns=REBATE_COLUMNS)
 
 
 def run_compliance(terms: pd.DataFrame, invoices: pd.DataFrame, original: pd.DataFrame,
