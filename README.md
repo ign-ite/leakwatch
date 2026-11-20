@@ -3,6 +3,8 @@
 Finds money leaking out of accounts payable: invoices paid twice, invoices billed above the contract
 price, and contract terms (price cuts, volume rebates) that were agreed by email but never applied.
 
+Who it's for: finance and accounts-payable teams that want to find recoverable money in their ERP exports.
+
 **Live app:** _link added after deploy_
 
 ## Invoice leakage (`leakage/`)
